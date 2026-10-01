@@ -24,6 +24,11 @@ export async function PUT(request: NextRequest) {
   const decisions = cleanText(body?.decisions, 10000) || null;
   const actionItems = Array.isArray(body?.action_items) ? (body?.action_items as ActionItem[]).slice(0, 50).map((item) => ({ title: cleanText(item.title, 240), description: cleanText(item.description, 2000), due_date: cleanText(item.due_date, 30) || null, priority: ["low", "medium", "high", "critical"].includes(String(item.priority)) ? item.priority : "medium", owner_id: cleanText(item.owner_id, 80) || null })).filter((item) => item.title.length >= 3) : [];
   if (!meetingId || content.length < 3) return Response.json({ ok: false, error: "Meeting and minutes content are required." }, { status: 422 });
+  const { data: meeting, error: meetingError } = await auth.client.from("live_meetings").select("id,host_id").eq("id", meetingId).maybeSingle();
+  if (meetingError) return Response.json({ ok: false, error: meetingError.message }, { status: 500 });
+  if (!meeting) return Response.json({ ok: false, error: "Meeting not found." }, { status: 404 });
+  const privileged = ["super_admin","hse_manager"].includes(auth.profile.role_code);
+  if (meeting.host_id !== auth.user.id && !privileged) return Response.json({ ok: false, error: "Only the meeting host or HSE management can update meeting minutes." }, { status: 403 });
 
   const existing = await auth.client.from("live_meeting_minutes").select("id,version,created_by").eq("meeting_id", meetingId).maybeSingle();
   if (existing.error) return Response.json({ ok: false, error: existing.error.message }, { status: 500 });
