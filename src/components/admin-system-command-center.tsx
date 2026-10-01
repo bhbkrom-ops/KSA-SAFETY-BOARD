@@ -1,7 +1,7 @@
 "use client";
 /* eslint-disable @typescript-eslint/no-explicit-any, react-hooks/set-state-in-effect */
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
-import { Activity, Building2, CheckCircle2, Database, LoaderCircle, Plus, RefreshCw, Search, Settings2, ShieldCheck, Users, X } from "lucide-react";
+import { Activity, CheckCircle2, Database, LoaderCircle, Plus, RefreshCw, Search, Settings2, ShieldCheck, Users, X } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
 export type AdminSystemView = "users"|"activity"|"plants"|"integrations"|"system-readiness"|"settings";
