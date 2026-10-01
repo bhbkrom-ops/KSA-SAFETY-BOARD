@@ -78,3 +78,47 @@
 .ptt-button.blocked { background:#fff0f0; border-color:#d98282; color:#a32828; }
 .ptt-button small { color:inherit; opacity:.8; }
 @media (max-width:600px) { .ptt-button { width:250px; } }
+
+
+/* Shared controlled-document print system */
+.standalone-print-shell{min-height:100vh;padding:22px;background:#e9eeee;color:#111}
+.standalone-print-actions{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:0 auto 16px;max-width:210mm}
+.standalone-print-actions button{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border:1px solid #c9d3d3;border-radius:6px;background:#fff;color:#17343d;font:600 11px/1.2 inherit;cursor:pointer}
+.standalone-print-actions button:hover{border-color:#7aa9a5}
+.standalone-print-state{display:grid;min-height:70vh;place-items:center;align-content:center;gap:10px;color:#35545b;background:#fff}
+.standalone-print-state.error{color:#8b3e32}
+.controlled-document{box-sizing:border-box;width:210mm;min-height:297mm;margin:0 auto;padding:13mm 14mm 12mm;background:#fff!important;color:#111!important;box-shadow:0 12px 38px rgba(18,50,57,.18);font-family:Arial,"Noto Sans Arabic",sans-serif}
+.controlled-document *{box-sizing:border-box}
+.controlled-document-header{display:grid;grid-template-columns:30mm 1fr auto;align-items:center;gap:8mm;padding-bottom:6mm;border-bottom:2px solid #173f50}
+.controlled-logo{display:grid;width:28mm;height:18mm;place-items:center;overflow:hidden}
+.controlled-logo img{display:block;max-width:28mm!important;max-height:18mm!important;width:auto!important;height:auto!important;object-fit:contain}
+.controlled-logo span{display:grid;width:18mm;height:18mm;place-items:center;border:1px solid #173f50;border-radius:4mm;color:#173f50;font-size:16pt;font-weight:800}
+.controlled-company{margin-bottom:2mm;color:#48636a;font-size:8.5pt;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.controlled-document h1{margin:0;color:#123746;font-size:17pt;line-height:1.2}
+.controlled-meta{display:grid;gap:1.5mm;text-align:end}
+.controlled-meta b{color:#173f50;font-size:9pt}.controlled-meta span{color:#65777c;font-size:7.5pt}
+.controlled-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0;border-top:1px solid #c9d1d2;border-left:1px solid #c9d1d2;margin-top:7mm}
+.controlled-fields>div{min-height:16mm;padding:3mm;border-right:1px solid #c9d1d2;border-bottom:1px solid #c9d1d2;break-inside:avoid}
+.controlled-fields>div.wide{grid-column:1/-1}
+.controlled-fields span{display:block;margin-bottom:1.5mm;color:#60757b;font-size:7.5pt;font-weight:700;text-transform:uppercase}
+.controlled-fields strong{display:block;color:#111;font-size:9.5pt;font-weight:500;line-height:1.45;white-space:pre-wrap}
+.controlled-section{margin-top:7mm;break-inside:avoid}
+.controlled-section h2{margin:0 0 3mm;color:#173f50;font-size:11pt}
+.controlled-section table{width:100%;border-collapse:collapse;table-layout:fixed}
+.controlled-section th,.controlled-section td{padding:2.2mm;border:1px solid #b9c3c4;color:#111!important;background:#fff!important;font-size:7.5pt;line-height:1.35;vertical-align:top;word-break:break-word}
+.controlled-section th{background:#f3f5f5!important;font-weight:700}
+.controlled-note{display:grid;grid-template-columns:28mm 1fr auto;gap:3mm;padding:2.5mm 0;border-bottom:1px solid #d8dede;font-size:8pt}
+.controlled-note small{color:#63767b}
+.controlled-document-footer{display:flex;justify-content:space-between;gap:8mm;margin-top:8mm;padding-top:3mm;border-top:1px solid #9eabad;color:#65777c;font-size:7pt}
+@page{size:A4;margin:0}
+@media print{
+  html,body{margin:0!important;padding:0!important;background:#fff!important;color:#111!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  [data-no-print],.standalone-print-actions,.sidebar,.topbar,.app-footer{display:none!important}
+  .standalone-print-shell{min-height:0!important;padding:0!important;background:#fff!important}
+  .controlled-document{width:210mm!important;min-height:297mm!important;margin:0!important;box-shadow:none!important;background:#fff!important;color:#111!important;page-break-after:avoid}
+  .controlled-document,.controlled-document *{filter:none!important;text-shadow:none!important}
+}
+@media(max-width:860px){
+  .standalone-print-shell{padding:10px;overflow-x:auto}
+  .controlled-document{width:210mm;transform-origin:top left}
+}
