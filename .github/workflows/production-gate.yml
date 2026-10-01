@@ -21,4 +21,11 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run quality
+      - run: npm run audit:routes
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: section-16-route-audit
+          path: docs/audits/generated/
+          if-no-files-found: warn
       - run: npm run build

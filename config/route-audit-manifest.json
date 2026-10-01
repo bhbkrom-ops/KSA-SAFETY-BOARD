@@ -1,0 +1,377 @@
+{
+  "version": 1,
+  "generatedFor": "Section 16 — Orphan / Legacy / Route Audit",
+  "visibilityDecisions": [
+    {
+      "path": "/",
+      "classification": "active",
+      "owner": "public-portal",
+      "reason": "Public industrial landing page"
+    },
+    {
+      "path": "/report",
+      "classification": "active",
+      "owner": "public-reporting",
+      "reason": "Public safety reporting intake"
+    },
+    {
+      "path": "/report/status",
+      "classification": "active",
+      "owner": "public-reporting",
+      "reason": "Private-code report tracking"
+    },
+    {
+      "path": "/report/:id",
+      "classification": "active",
+      "owner": "public-reporting",
+      "reason": "Canonical public SOR view"
+    },
+    {
+      "path": "/ncr/:id",
+      "classification": "active",
+      "owner": "ncr",
+      "reason": "Standalone printable NCR"
+    },
+    {
+      "path": "/admin/login",
+      "classification": "utility",
+      "owner": "authentication",
+      "reason": "Authentication surface; intentionally excluded from sidebar"
+    },
+    {
+      "path": "/admin/ncr/new",
+      "classification": "utility",
+      "owner": "ncr",
+      "reason": "Create workflow; intentionally excluded from sidebar"
+    },
+    {
+      "path": "/admin/ncr/:id",
+      "classification": "utility",
+      "owner": "ncr",
+      "reason": "Record workflow; intentionally excluded from sidebar"
+    },
+    {
+      "path": "/admin/ncr/:id/preview",
+      "classification": "utility",
+      "owner": "ncr",
+      "reason": "Preview workflow; intentionally excluded from sidebar"
+    },
+    {
+      "path": "/admin/safety-pyramid-print",
+      "classification": "utility",
+      "owner": "hse-operations",
+      "reason": "Print-only route; intentionally excluded from sidebar"
+    },
+    {
+      "path": "/admin/safety-signs",
+      "classification": "alias",
+      "canonical": "/admin/reports-documents/safety-signs",
+      "owner": "reports-documents",
+      "reason": "Backward-compatible alias handled by dynamic admin module route"
+    },
+    {
+      "path": "/admin/inbound-config",
+      "classification": "alias",
+      "owner": "safety-communication",
+      "reason": "Legacy inbound configuration entry explicitly redirects to Email Settings",
+      "canonical": "/admin/email-settings"
+    },
+    {
+      "path": "/admin/competency",
+      "classification": "hidden",
+      "owner": "licenses-competency",
+      "reason": "Available through competency/training context, not a primary sidebar entry"
+    },
+    {
+      "path": "/admin/facility-regulatory-licenses",
+      "classification": "hidden",
+      "owner": "compliance",
+      "reason": "Available through compliance/environmental context, not a primary sidebar entry"
+    },
+    {
+      "path": "/admin/environmental-measurements",
+      "classification": "hidden",
+      "owner": "compliance",
+      "reason": "Available through environmental/compliance context, not a primary sidebar entry"
+    },
+    {
+      "path": "/admin/vision/alerts",
+      "classification": "hidden",
+      "owner": "vision",
+      "reason": "Vision child route exposed through Vision sub-navigation"
+    },
+    {
+      "path": "/admin/vision/settings",
+      "classification": "hidden",
+      "owner": "vision",
+      "reason": "Vision child route exposed through Vision sub-navigation"
+    },
+    {
+      "path": "/admin/vision/ppe",
+      "classification": "hidden",
+      "owner": "vision",
+      "reason": "Advanced Vision child route"
+    },
+    {
+      "path": "/admin/vision/fire-smoke",
+      "classification": "hidden",
+      "owner": "vision",
+      "reason": "Advanced Vision child route"
+    },
+    {
+      "path": "/admin/vision/equipment",
+      "classification": "hidden",
+      "owner": "vision",
+      "reason": "Advanced Vision child route"
+    },
+    {
+      "path": "/admin/vision/people-vehicles",
+      "classification": "hidden",
+      "owner": "vision",
+      "reason": "Advanced Vision child route"
+    },
+    {
+      "path": "/admin/vision/heatmap",
+      "classification": "hidden",
+      "owner": "vision",
+      "reason": "Advanced Vision child route"
+    },
+    {
+      "path": "/admin/vision/recordings",
+      "classification": "hidden",
+      "owner": "vision",
+      "reason": "Advanced Vision child route"
+    },
+    {
+      "path": "/admin/vision/restricted-areas",
+      "classification": "hidden",
+      "owner": "vision",
+      "reason": "Advanced Vision child route"
+    },
+    {
+      "path": "/admin/vision/audit-log",
+      "classification": "hidden",
+      "owner": "vision",
+      "reason": "Advanced Vision child route"
+    }
+  ],
+  "legacyResources": [
+    {
+      "name": "safety_lessons",
+      "classification": "legacy",
+      "replacement": "safety_learning_alerts",
+      "policy": "forbidden"
+    },
+    {
+      "name": "safety_lesson_acknowledgements",
+      "classification": "legacy",
+      "replacement": "safety_learning_recipients",
+      "policy": "forbidden"
+    },
+    {
+      "name": "src/pages/admin/lessons-learned.tsx",
+      "classification": "orphan",
+      "replacement": "/admin/safety-learning",
+      "policy": "must-not-reintroduce"
+    }
+  ],
+  "apiIntentionalNoDirectUiCaller": [
+    "/api/auth/bootstrap",
+    "/api/auth/logout",
+    "/api/auth/me",
+    "/api/cron/monthly-hse",
+    "/api/health",
+    "/api/hse-management-review-items",
+    "/api/public-branding",
+    "/api/safety-intelligence",
+    "/api/safety-reporting-identity",
+    "/api/traceability",
+    "/api/vision-settings",
+    "/api/weather-current"
+  ],
+  "tableOwnerRules": [
+    {
+      "pattern": "^vision_",
+      "owner": "vision"
+    },
+    {
+      "pattern": "^live_meeting",
+      "owner": "live-collaboration"
+    },
+    {
+      "pattern": "^safety_radio_",
+      "owner": "safety-communication"
+    },
+    {
+      "pattern": "^safety_learning_",
+      "owner": "hse-operations"
+    },
+    {
+      "pattern": "^hse_",
+      "owner": "hse-core"
+    },
+    {
+      "pattern": "^environmental_",
+      "owner": "environmental-compliance"
+    },
+    {
+      "pattern": "^fire_",
+      "owner": "fire-emergency"
+    },
+    {
+      "pattern": "^emergency_",
+      "owner": "emergency-response"
+    },
+    {
+      "pattern": "^equipment_",
+      "owner": "equipment-safety"
+    },
+    {
+      "pattern": "^contractor",
+      "owner": "contractor-safety"
+    },
+    {
+      "pattern": "^training",
+      "owner": "training-competency"
+    },
+    {
+      "pattern": "^risk_",
+      "owner": "risk-management"
+    },
+    {
+      "pattern": "^auth_",
+      "owner": "authentication"
+    },
+    {
+      "pattern": "^public_report_",
+      "owner": "public-reporting"
+    },
+    {
+      "pattern": "^notification",
+      "owner": "notifications"
+    },
+    {
+      "pattern": "^escalation",
+      "owner": "escalations"
+    },
+    {
+      "pattern": "^inspection",
+      "owner": "inspections"
+    },
+    {
+      "pattern": "^loto_",
+      "owner": "work-control"
+    },
+    {
+      "pattern": "^ptw_",
+      "owner": "work-control"
+    },
+    {
+      "pattern": "^moc_",
+      "owner": "management-of-change"
+    },
+    {
+      "pattern": "^jsa_",
+      "owner": "work-control"
+    },
+    {
+      "pattern": "^job_safety_",
+      "owner": "work-control"
+    },
+    {
+      "pattern": "^occupational_health_",
+      "owner": "industrial-hygiene"
+    },
+    {
+      "pattern": "^process_safety_",
+      "owner": "process-safety"
+    },
+    {
+      "pattern": "^bowtie_",
+      "owner": "process-safety"
+    },
+    {
+      "pattern": "^gamification_",
+      "owner": "safety-culture"
+    }
+  ],
+  "tableOwnerExplicit": {
+    "actions": "capa-action-center",
+    "action_comments": "capa-action-center",
+    "action_evidence": "capa-action-center",
+    "action_escalations": "capa-action-center",
+    "action_history": "capa-action-center",
+    "assembly_points": "emergency-response",
+    "attachments": "shared-records",
+    "audit_logs": "administration",
+    "buildings": "facilities",
+    "capa": "capa-action-center",
+    "competency": "training-competency",
+    "compliance_obligations": "compliance",
+    "departments": "administration",
+    "incidents": "incidents",
+    "licenses": "licenses-competency",
+    "ncr": "ncr",
+    "permissions": "rbac",
+    "profiles": "authentication",
+    "reports": "safety-reporting",
+    "role_permissions": "rbac",
+    "roles": "rbac",
+    "safety_assets": "safety-assets",
+    "safety_map_points": "safety-map",
+    "safety_maps": "safety-map",
+    "safety_monthly_category_statistics": "analytics",
+    "safety_monthly_statistics": "analytics",
+    "safety_signs": "reports-documents",
+    "sites": "facilities",
+    "system_settings": "administration",
+    "user_roles": "rbac",
+    "visitors": "visitor-safety",
+    "work_areas": "facilities",
+    "work_control_history": "work-control",
+    "official_templates": "reports-documents",
+    "report_attachments": "public-reporting",
+    "critical_control_verifications": "critical-controls",
+    "employee_directory": "workforce",
+    "facility_regulatory_licenses": "compliance",
+    "lmra_assessments": "work-control"
+  },
+  "apiNoCallerDecisions": [
+    {
+      "endpoint": "/api/hse-management-review-items",
+      "classification": "hidden-backend-contract",
+      "owner": "management-review",
+      "reason": "Governed agenda-item CRUD contract; current overview UI uses the parent review endpoint and does not yet expose item editing."
+    },
+    {
+      "endpoint": "/api/safety-intelligence",
+      "classification": "integration-contract",
+      "owner": "overview",
+      "reason": "Dedicated permission-scoped intelligence contract retained for integrations; current UI consumes the shared overview snapshot."
+    },
+    {
+      "endpoint": "/api/safety-reporting-identity",
+      "classification": "privileged-backend-contract",
+      "owner": "public-reporting",
+      "reason": "Manager/Super Admin audited reporter-identity reveal action; intentionally not invoked by public UI."
+    },
+    {
+      "endpoint": "/api/traceability",
+      "classification": "backend-contract",
+      "owner": "cross-module-traceability",
+      "reason": "Generic allowlisted cross-module relationship API used as an integration/administrative contract."
+    },
+    {
+      "endpoint": "/api/vision-settings",
+      "classification": "hidden-backend-contract",
+      "owner": "vision",
+      "reason": "Persisted Vision settings CRUD contract for hidden Vision settings surface."
+    },
+    {
+      "endpoint": "/api/weather-current",
+      "classification": "integration-boundary",
+      "owner": "dashboard",
+      "reason": "Safe weather-provider boundary; returns not_configured until provider credentials/integration are added."
+    }
+  ]
+}
