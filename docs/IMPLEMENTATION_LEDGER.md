@@ -69,3 +69,34 @@
 **IMPLEMENTED — DEPLOYED, AUTHENTICATED ACCEPTANCE PENDING**
 
 The repository foundation, Live Collaboration slice, and Vision slice are implemented in GitHub, Supabase, and the linked Vercel production deployment. Production readiness still requires authenticated browser CRUD/Realtime verification, actual ESP ingestion/stream gateway integration, storage/recording policies, and the remaining module gates.
+
+## 02B — ESP Vision Advanced and Orphan Pages
+
+### Orphan classification
+
+All eight source-page capabilities were classified as **Supported / Activated**, not discarded:
+
+- `/admin/vision/audit-log` → `vision_audit_logs` → `/api/vision-audit-logs`
+- `/admin/vision/equipment` → persisted `vision_alerts` with `equipment` / `proximity` categories
+- `/admin/vision/fire-smoke` → persisted `vision_alerts` with `fire_smoke` plus thermal-camera inventory
+- `/admin/vision/heatmap` → persisted alert density grouped by camera/area
+- `/admin/vision/people-vehicles` → persisted `people_vehicle` / `proximity` alerts
+- `/admin/vision/ppe` → persisted PPE alerts and active PPE rules
+- `/admin/vision/recordings` → `vision_recordings` → `/api/vision-recordings`
+- `/admin/vision/restricted-areas` → `vision_restricted_zones` → `/api/vision-restricted-zones`
+
+### Advanced governance
+
+- Added model/detection/object/version, threshold, tracking, dedupe, verification, and HSE-link fields to `vision_alerts`.
+- Added deduplication and tracking indexes.
+- Added audit triggers for alert and settings changes with actor, action, target, before/after metadata, timestamp, and client IP where available.
+- Added severity/status filters to the Alerts Center.
+- Preserved truthful limitations: no metric proximity claim without calibration; no playback/export control when NVR/video integration is unavailable; no synthetic heatmap or AI events.
+
+### Verification
+
+- `npm run lint` — PASS.
+- `npm run build` — PASS.
+- Advanced routes `ppe`, `fire-smoke`, `equipment`, `people-vehicles`, `heatmap`, `recordings`, `restricted-areas`, and `audit-log` — HTTP 200 on the production build.
+- All Vision APIs — HTTP 401 without authentication.
+- Secret scan — no RTSP credentials, service-role keys, device tokens, or private keys found.

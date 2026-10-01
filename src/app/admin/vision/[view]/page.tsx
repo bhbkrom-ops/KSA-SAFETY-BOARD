@@ -1,7 +1,7 @@
 import SafetyBoard from "@/components/safety-board";
 import type { VisionView } from "@/components/vision-command-center";
 
-const allowed = new Set<VisionView>(["dashboard", "live", "cameras", "devices", "map", "rules", "events", "alerts", "analytics", "settings"]);
+const allowed = new Set<VisionView>(["dashboard", "live", "cameras", "devices", "map", "rules", "events", "alerts", "analytics", "ppe", "fire-smoke", "equipment", "people-vehicles", "heatmap", "recordings", "restricted-areas", "audit-log", "settings"]);
 
 type Props = { params: Promise<{ view: string }> };
 
