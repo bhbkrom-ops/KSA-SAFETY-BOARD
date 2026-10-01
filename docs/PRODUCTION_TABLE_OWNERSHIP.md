@@ -1,10 +1,11 @@
 # Production Table Ownership Catalog
 
-Section 16 authoritative ownership catalog for the production Supabase public schema.
+Section 16/17 authoritative ownership catalog for the production Supabase public schema.
 
 - Production project: `qazqzejfucknpmnkorqa`
-- Tables cataloged: **140**
+- Tables cataloged: **144**
 - Ownership gaps: **0**
+- SIMOPS is governed by the dedicated `simops_*` module tables.
 - Legacy `safety_lessons` tables are intentionally not part of production; Safety Learning uses the current governed model.
 
 ## administration
@@ -225,6 +226,13 @@ Section 16 authoritative ownership catalog for the production Supabase public sc
 ## shared-records
 
 - `attachments`
+
+## simops
+
+- `simops_activities`
+- `simops_conflict_rules`
+- `simops_conflicts`
+- `simops_plans`
 
 ## training-competency
 
