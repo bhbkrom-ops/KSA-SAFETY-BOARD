@@ -100,3 +100,37 @@ All eight source-page capabilities were classified as **Supported / Activated**,
 - Advanced routes `ppe`, `fire-smoke`, `equipment`, `people-vehicles`, `heatmap`, `recordings`, `restricted-areas`, and `audit-log` — HTTP 200 on the production build.
 - All Vision APIs — HTTP 401 without authentication.
 - Secret scan — no RTSP credentials, service-role keys, device tokens, or private keys found.
+
+## 03 — Overview / نظرة عامة
+
+### Implemented
+
+The nine required branches are now routed through the authenticated Overview command center: dashboard, executive HSE, Safety Intelligence, Daily Operations Command, HSE Management Review, HSE Objectives, Environmental Aspects, Intelligence & Reporting Center, and the read-only HSE Assistant. The old limited dashboard renderer was replaced with the shared Overview surface while preserving the existing module register routes.
+
+The implementation uses real permission-scoped APIs. `/api/data` serves dashboard, executive, daily-operations, and assistant resources; `/api/safety-intelligence` serves leading/lagging indicators and coverage; `/api/weather-current` returns an explicit not-configured state; management reviews, agenda items, objectives, progress updates, environmental aspects, and environmental monitoring have server-side CRUD endpoints.
+
+### KPI integrity
+
+Overview KPIs are calculated from bounded live queries over reports, actions, incidents, NCR, risk assessments/hazards, notifications, Vision alerts/devices, HSE objectives, environmental aspects/measurements, and management reviews. Leading and lagging indicators are separated, freshness is shown, drilldown links preserve source-module intent, and unavailable modules remain `null`/Not configured rather than fabricated zeroes.
+
+### Database and governance
+
+Migrations `0009_overview_management_objectives_environment.sql` and `0010_overview_snapshot_rpc.sql` were applied successfully. The target Supabase project now contains HSE management review/register item tables, HSE objectives/updates/action links, environmental aspects/monitoring tables, Overview permissions, RLS policies, indexes, audit triggers, and the governed `capture_hse_management_review_snapshot` RPC. All new tables report RLS enabled.
+
+### Design / print / mobile
+
+The Overview UI has a responsive operational layout, mobile stacking, horizontally scrollable subnavigation/tables, compact touch-oriented actions, explicit loading/error/empty states, and print CSS that removes application chrome and forces a white report canvas. Arabic/RTL-specific visual browser verification remains not tested in this sandbox; logical alignment and direction-safe spacing were used where applicable.
+
+### Verification evidence
+
+- `npm run lint` — PASS.
+- `npm run build` — PASS; 28 static/dynamic routes compiled.
+- Nine Overview routes — HTTP 200 on the production build.
+- All Overview APIs tested without a bearer token — HTTP 401 with the expected JSON contract.
+- Secret scan — no service-role keys, private keys, password assignments, or bearer tokens found.
+- `git diff --check` — PASS.
+- Supabase table inventory — all seven new Overview tables present with RLS enabled.
+
+### Explicit gaps
+
+PTW/LOTO, inspections, equipment, fire systems, contractor safety, industrial hygiene, MOC, critical controls, handovers, training, safety-alert acknowledgements, weather provider, monthly report generation, and notification automation are not configured in this target schema. Their Overview indicators remain explicit Not configured states. Browser-level authenticated CRUD persistence, desktop/tablet/mobile visual inspection, and Arabic RTL visual inspection are not tested in this sandbox because no authenticated browser session was available.

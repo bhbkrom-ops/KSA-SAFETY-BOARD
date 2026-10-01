@@ -4,7 +4,6 @@ import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { User } from "@supabase/supabase-js";
 import {
-  Activity,
   AlertTriangle,
   ArrowRight,
   ArrowUpRight,
@@ -15,8 +14,6 @@ import {
   ChevronDown,
   CircleDot,
   ClipboardCheck,
-  Clock3,
-  Cloud,
   Database,
   Eye,
   FileWarning,
@@ -37,17 +34,17 @@ import {
   Siren,
   SlidersHorizontal,
   UserRound,
-  Wind,
   X,
 } from "lucide-react";
 import type { Tables, TablesInsert } from "@/lib/database.types";
 import LiveMeetingView from "@/components/live-meeting";
 import VisionCommandCenter, { type VisionView } from "@/components/vision-command-center";
+import OverviewCommandCenter, { type OverviewView } from "@/components/overview-command-center";
 import { navigationGroups, pathForRoute } from "@/lib/route-registry";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 
 type ModuleView = "reports" | "actions" | "risk" | "incidents" | "ncr";
-type View = "dashboard" | ModuleView | "live-meeting" | "vision" | "report";
+type View = OverviewView | ModuleView | "live-meeting" | "vision" | "report";
 type Profile = Pick<Tables<"profiles">, "display_name" | "email" | "role_code" | "is_active">;
 type BoardRow = {
   id: string;
@@ -158,38 +155,6 @@ function Topbar({ onSignOut, onOpenReport }: { onSignOut: () => void; onOpenRepo
 
 function PageHeader({ eyebrow, title, description, action }: { eyebrow: string; title: string; description: string; action?: React.ReactNode }) {
   return <div className="page-header"><div><div className="eyebrow accent-eyebrow">{eyebrow}</div><h1>{title}</h1><p>{description}</p></div>{action && <div className="header-action">{action}</div>}</div>;
-}
-
-function DashboardView({ onNavigate }: { onNavigate: (view: View) => void }) {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [metrics, setMetrics] = useState({ reports: 0, risks: 0, overdue: 0, incidents: 0 });
-  const [recent, setRecent] = useState<BoardRow[]>([]);
-
-  const load = useCallback(async () => {
-    if (!supabase) return;
-    setLoading(true);
-    setError(null);
-    const today = new Date().toISOString().slice(0, 10);
-    const [reports, risks, overdue, incidents, recentReports] = await Promise.all([
-      supabase.from("reports").select("id", { count: "exact", head: true }).neq("status", "closed"),
-      supabase.from("risk_assessments").select("id", { count: "exact", head: true }).in("status", ["review", "active"]),
-      supabase.from("actions").select("id", { count: "exact", head: true }).neq("status", "closed").lt("due_date", today),
-      supabase.from("incidents").select("id", { count: "exact", head: true }).neq("status", "closed"),
-      supabase.from("reports").select("id,reference_no,description,exact_area,status,priority,updated_at").order("updated_at", { ascending: false }).limit(5),
-    ]);
-    const firstError = [reports.error, risks.error, overdue.error, incidents.error, recentReports.error].find(Boolean);
-    if (firstError) setError(firstError.message);
-    setMetrics({ reports: reports.count ?? 0, risks: risks.count ?? 0, overdue: overdue.count ?? 0, incidents: incidents.count ?? 0 });
-    setRecent((recentReports.data ?? []).map((row) => ({ id: row.id, reference: row.reference_no, title: row.description, location: row.exact_area || "Unspecified area", status: row.status, priority: row.priority, updated: row.updated_at })));
-    setLoading(false);
-  }, []);
-
-  useEffect(() => { const timer = window.setTimeout(() => { void load(); }, 0); return () => window.clearTimeout(timer); }, [load]);
-
-  if (loading) return <LoadingState />;
-  if (error) return <ErrorState message={error} onRetry={() => void load()} />;
-  return <><PageHeader eyebrow="OPERATIONAL OVERVIEW" title="Safety command center" description="Prioritize exceptions, control exposure, and keep every corrective action moving." action={<button className="primary-button" onClick={() => onNavigate("report")}><Plus size={17} /> New safety report</button>} /><div className="live-notice"><CheckCircle2 size={17} /><span><strong>Live data connected.</strong> Counts and recent reports are read from the protected Supabase register.</span><button onClick={() => void load()}><RefreshCw size={14} /> Refresh</button></div><section className="weather-grid" aria-label="Adapter status"><div className="weather-card"><div className="weather-icon"><Cloud size={22} /></div><div><div className="card-label">Weather status</div><strong>Not connected</strong><span>Provider adapter ready</span></div><span className="adapter-tag">ADAPTER</span></div><div className="weather-card"><div className="weather-icon"><Wind size={22} /></div><div><div className="card-label">Wind direction</div><strong>—</strong><span>Awaiting provider</span></div></div><div className="weather-card"><div className="weather-icon"><Activity size={22} /></div><div><div className="card-label">Wind speed</div><strong>—</strong><span>Awaiting provider</span></div></div></section><section className="metric-grid"><button className="metric-card metric-blue" onClick={() => onNavigate("reports")}><div className="metric-icon"><FileWarning size={19} /></div><div className="metric-copy"><span>Open reports</span><strong>{metrics.reports}</strong><small>From live register</small></div><ArrowUpRight size={17} className="metric-arrow" /></button><button className="metric-card metric-red" onClick={() => onNavigate("risk")}><div className="metric-icon"><ShieldAlert size={19} /></div><div className="metric-copy"><span>Risks for review</span><strong>{metrics.risks}</strong><small>Review or active</small></div><ArrowUpRight size={17} className="metric-arrow" /></button><button className="metric-card metric-amber" onClick={() => onNavigate("actions")}><div className="metric-icon"><Clock3 size={19} /></div><div className="metric-copy"><span>Overdue actions</span><strong>{metrics.overdue}</strong><small>Past due date</small></div><ArrowUpRight size={17} className="metric-arrow" /></button><button className="metric-card metric-green" onClick={() => onNavigate("incidents")}><div className="metric-icon"><Siren size={19} /></div><div className="metric-copy"><span>Open incidents</span><strong>{metrics.incidents}</strong><small>Needs investigation</small></div><ArrowUpRight size={17} className="metric-arrow" /></button></section><div className="dashboard-columns"><section className="panel attention-panel"><div className="panel-heading"><div><div className="eyebrow">LATEST REGISTER ACTIVITY</div><h2>Recent safety reports</h2></div><button className="text-button" onClick={() => onNavigate("reports")}>Open register <ArrowRight size={14} /></button></div>{recent.length === 0 ? <EmptyState label="reports" /> : <div className="queue-list">{recent.map((item) => <button className="queue-item" key={item.id} onClick={() => onNavigate("reports")}><div className={`queue-severity severity-${toneFor(item.priority)}`}><CircleDot size={14} /></div><div className="queue-main"><div className="queue-code">{item.reference}<span>·</span>{formatDate(item.updated)}</div><strong>{item.title}</strong><span>{item.location}</span></div><div className="queue-side"><StatusPill tone={toneFor(item.status)}>{formatStatus(item.status)}</StatusPill><ArrowUpRight size={16} /></div></button>)}</div>}</section><section className="panel trend-panel"><div className="panel-heading"><div><div className="eyebrow">CONTROL POSTURE</div><h2>Connected foundation</h2></div><Database size={20} className="panel-mark" /></div><div className="posture-list"><div><CheckCircle2 size={17} /><span>Supabase database and RLS</span><strong>Connected</strong></div><div><CheckCircle2 size={17} /><span>Protected staff registers</span><strong>Role-gated</strong></div><div><CheckCircle2 size={17} /><span>Public report intake</span><strong>Available</strong></div><div><AlertTriangle size={17} /><span>Storage and weather adapters</span><strong>Pending</strong></div></div><button className="secondary-button" onClick={() => onNavigate("reports")}>Review operational data <ArrowRight size={14} /></button></section></div></>;
 }
 
 async function fetchRows(kind: ModuleView): Promise<BoardRow[]> {
@@ -313,7 +278,8 @@ function BoardShell({ view, visionView, user, profile }: { view: Exclude<View, "
   const [active, setActive] = useState<Exclude<View, "report">>(view);
   const navigate = (next: View) => { router.push(pathForRoute(next)); if (next !== "report") setActive(next); };
   const signOut = () => { void supabase?.auth.signOut(); };
-  return <div className="app-shell"><Sidebar active={active} onNavigate={navigate} profile={profile} onSignOut={signOut} /><div className="main-area"><Topbar onSignOut={signOut} onOpenReport={() => navigate("reports")} /><main className="main-content">{active === "dashboard" ? <DashboardView onNavigate={navigate} /> : active === "live-meeting" ? <LiveMeetingView user={user} /> : active === "vision" ? <VisionCommandCenter user={user} view={visionView ?? "dashboard"} /> : <RegisterView kind={active} user={user} />}</main><footer className="app-footer"><span>KSA SAFETY BOARD <b>·</b> Live operational workspace</span><span>Supabase <strong>connected</strong> <CircleDot size={10} /></span></footer></div></div>;
+  const overviewViews: OverviewView[] = ["dashboard", "executive-hse", "safety-intelligence", "daily-operations-command", "hse-management-review", "hse-objectives", "environmental-aspects", "intelligence-reporting-center", "hse-assistant"];
+  return <div className="app-shell"><Sidebar active={active} onNavigate={navigate} profile={profile} onSignOut={signOut} /><div className="main-area"><Topbar onSignOut={signOut} onOpenReport={() => navigate("reports")} /><main className="main-content">{overviewViews.includes(active as OverviewView) ? <OverviewCommandCenter userId={user.id} view={active as OverviewView} /> : active === "live-meeting" ? <LiveMeetingView user={user} /> : active === "vision" ? <VisionCommandCenter user={user} view={visionView ?? "dashboard"} /> : <RegisterView kind={active as ModuleView} user={user} />}</main><footer className="app-footer"><span>KSA SAFETY BOARD <b>·</b> Live operational workspace</span><span>Supabase <strong>connected</strong> <CircleDot size={10} /></span></footer></div></div>;
 }
 
 function AuthGate({ view, visionView }: { view: View; visionView?: VisionView }) {
