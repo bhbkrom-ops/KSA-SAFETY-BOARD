@@ -293,6 +293,10 @@
     {
       "pattern": "^gamification_",
       "owner": "safety-culture"
+    },
+    {
+      "pattern": "^simops_",
+      "owner": "simops"
     }
   ],
   "tableOwnerExplicit": {
