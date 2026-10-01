@@ -85,3 +85,31 @@ Migration `0015_licenses_training_competency_authorizations.sql` was applied suc
 ### Explicit gaps
 
 Authenticated browser persistence, employee picker/search integration, photo upload/storage validation, QR generation/resolution, and standalone PDF/certificate preview routes require the shared document/Storage phase. The print action is implemented with a white print-safe surface, but the official document architect phase will harden A4/card templates and QR behavior in Section 12.
+
+## 08 — Safety Systems & Emergency Preparedness
+
+### Implemented
+
+Implemented the complete Section 08 route family: `/admin/life-safety-operations`, `/admin/equipment-safety`, `/admin/assets`, `/admin/contractor-safety`, `/admin/visitors`, `/admin/safety-map`, `/admin/fire-emergency-command`, `/admin/emergency-response`, `/admin/emergency`, and `/admin/fire-protection`. The previous Fire & Emergency planned navigation entry is now an active route with a live-safety dashboard.
+
+### Database and relationships
+
+Migration `0016_safety_systems_emergency_preparedness.sql` was applied successfully to Supabase. It adds fire gateways, panels, devices, events, emergency exits, assembly points, responses, timelines, muster records, drills, fire equipment, safety assets, equipment passports, maps/map points, contractors/workers/documents, and visitors. All 19 tables have RLS enabled, staff policies, authenticated grants, anonymous revocation, relational foreign keys, lifecycle check constraints, and operational indexes.
+
+### API and UI
+
+`/api/safety-systems?resource=...` provides authenticated CRUD across Section 08 resources. It supports lifecycle actions for alert acknowledgement, event resolution, and human-controlled response accounting. The command center provides real dashboard aggregation, search, status filters, create/edit/delete, destructive confirmation, CSV export, print-safe output, responsive layouts, loading/error/empty states, and operational links between the life-safety dashboard and source modules.
+
+### Verification
+
+- `npm run lint` — PASS with no warnings.
+- `npm run build` — PASS; 37 routes compiled.
+- All 10 Section 08 routes — HTTP 200 through the production server.
+- All tested Section 08 API reads and unauthenticated create — HTTP 401 structured JSON.
+- Supabase verification — all 19 Section 08 tables exist with RLS enabled; permission count is 64.
+- Secret scan — PASS.
+- `git diff --check` — PASS.
+
+### Explicit gaps
+
+Direct fire gateway/ESP ingestion, certified panel integrations, Storage-backed floor-plan uploads, QR resolution routes, contractor document signed-upload flow, automated alarm notification outbox, and authenticated browser CRUD persistence remain integration work. The current implementation intentionally exposes truthful persisted infrastructure state and does not fabricate live alarms or stream connectivity.
