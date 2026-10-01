@@ -145,3 +145,31 @@ Migration `0017_hse_reports_documents.sql` was applied successfully to Supabase 
 ### Explicit gaps
 
 Authenticated browser CRUD persistence, direct Supabase Storage upload UI, automated PDF/DOC generation, QR resolution, formal bilingual report templates, and governed scheduler registration for recurring exports remain follow-up work for Sections 10–12 and the final quality gate. The current slice provides real persisted CRUD boundaries and print-safe sign output without claiming those later integrations are complete.
+
+## 10 — Safety Communication & Culture
+
+### Implemented
+
+Implemented protected routes `/admin/gamification`, `/admin/sections`, `/admin/posts`, `/admin/safety-radio`, `/admin/inbound-inbox`, `/admin/email-settings`, and `/admin/notification-rules`. The shared Section 10 command center provides live loading/error/empty/populated states, responsive registers, search, create flows, inbox unread filtering, read-only provider readiness, and a mobile-friendly push-to-talk interaction with microphone permission and floor lease feedback.
+
+### Database and permissions
+
+Migration `0018_safety_communication_culture.sql` was applied to Supabase project `qazqzejfucknpmnkorqa`. It adds reporting linkage to `departments`, persisted `hse_posts`, `notification_rules`, gamification points/badges/awards, safety radio channels/members/floor leases, indexes, staff-only RLS, authenticated grants, and anonymous revocation. It adds server-side radio acquire/heartbeat/release functions with bounded leases and contention-safe primary-key enforcement. Section 10 permissions were added for champions, departments, posts, radio, inbox, notification rules, and email readiness.
+
+### API and workflow
+
+`/api/safety-communication?resource=...` provides authenticated reads and staff-only mutation boundaries for departments, posts, channels, notification rules, gamification resources, and inbox operations. Email settings are server-read-only and expose readiness metadata without browser secret entry. Radio actions call the database floor-lease functions rather than relying on local state. The UI contains no localStorage or fabricated scoring values; empty Champions explicitly shows Awaiting scoring data / Not enough data.
+
+### Verification
+
+- `npm install --no-audit --no-fund` — PASS after sandbox recovery.
+- `npm run lint` — PASS.
+- `npm run build` — PASS; 39 routes compiled including `/api/safety-communication`.
+- All seven Section 10 routes — HTTP 200 through the production server on port 4100.
+- All seven Section 10 resource reads without authentication — HTTP 401 structured JSON.
+- `git diff --check` — PASS.
+- Targeted secret scan — no service-role keys, private keys, API tokens, or bearer credentials found; generic documentation/source terms such as `risk-register` were excluded as false positives.
+
+### Explicit gaps
+
+Full WebRTC signaling/media transport and Supabase Realtime presence/broadcast, granular non-staff role-permission mapping, automatic scoring rule evaluation from approved source records, badge criteria processing, notification delivery/outbox fan-out, notification mark-read endpoint, and department selector integration across every legacy free-text field remain follow-up work for Section 10B, Section 11, and the final quality gate. The current slice provides persisted governed foundations and truthful readiness states without claiming those integrations are complete.

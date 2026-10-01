@@ -68,3 +68,13 @@
 .print-sign-canvas p { max-width:620px; font-size:20px; line-height:1.5; margin:8px 0; }
 .print-sign-canvas footer { margin-top:auto; font-size:11px; color:#657383; }
 @media print { .app-shell, .modal-backdrop > *:not(.print-preview-dialog), .preview-actions { display:none !important; } .print-preview-dialog { width:100%; max-height:none; padding:0; background:#fff; } .print-sign-canvas { border:0; min-height:0; height:100vh; } }
+
+/* Section 10 safety communication */
+.settings-panel ul { display:grid; gap:8px; padding-left:20px; color:var(--muted,#657383); }
+.radio-panel { display:grid; gap:16px; max-width:680px; }
+.radio-panel select { max-width:360px; }
+.ptt-button { width:min(320px,80vw); aspect-ratio:1; border-radius:50%; border:10px solid #c9dce1; background:#e7f3f5; color:#155b67; display:grid; place-content:center; justify-items:center; gap:8px; cursor:pointer; box-shadow:0 10px 30px #123c4a20; touch-action:none; }
+.ptt-button.transmitting { background:#d7f3e3; border-color:#64b883; color:#146b40; }
+.ptt-button.blocked { background:#fff0f0; border-color:#d98282; color:#a32828; }
+.ptt-button small { color:inherit; opacity:.8; }
+@media (max-width:600px) { .ptt-button { width:250px; } }
