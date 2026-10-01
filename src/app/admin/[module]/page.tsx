@@ -7,6 +7,7 @@ import type { WorkControlView } from "@/components/work-control-command-center";
 import type { EnvironmentalComplianceView } from "@/components/environmental-compliance-command-center";
 import type { Section07View } from "@/components/licenses-competency-command-center";
 import type { SafetySystemsView } from "@/components/safety-systems-command-center";
+import type { ReportsDocumentsView } from "@/components/hse-reports-documents-command-center";
 
 type ModulePageProps = { params: Promise<{ module: string }> };
 const allowed = new Set<string>(moduleRouteIds);
@@ -16,17 +17,19 @@ const workControlViews = new Set<WorkControlView>(["permit-compliance-center", "
 const environmentalViews = new Set<EnvironmentalComplianceView>(["environmental-measurements", "facility-regulatory-licenses"]);
 const section07Views = new Set<Section07View>(["licenses", "trainings", "training-attendance", "equipment-auth", "training-matrix", "competency", "official-templates", "enterprise-reports"]);
 const section08Views = new Set<SafetySystemsView>(["life-safety-operations", "equipment-safety", "assets", "contractor-safety", "visitors", "safety-map", "fire-emergency-command", "emergency-response", "emergency", "fire-protection"]);
+const reportsDocumentsViews = new Set<ReportsDocumentsView>(["files", "reports-documents", "safety-signs", "contracts", "forms", "invoices"]);
 const operationsViews = new Set<HSEOperationsView>(["hse-team", "employees", "import-center", "employee-violations", "safety-reporting", "mobile-field", "action-center", "workflow-center", "management-of-change", "hse-shift-handover", "monthly-hse-report", "monthly-hse-plan", "safety-learning", "chemicals", "risk-register", "critical-controls", "process-safety-barriers", "industrial-hygiene", "risk-assessment", "safety-pyramid"]);
 
 export default async function ModulePage({ params }: ModulePageProps) {
   const { module } = await params;
   if (overviewViews.has(module as OverviewView)) return <SafetyBoard view={module as OverviewView} />;
+  if (reportsDocumentsViews.has(module as ReportsDocumentsView)) return <SafetyBoard view={module as ReportsDocumentsView} />;
   if (operationsViews.has(module as HSEOperationsView)) return <SafetyBoard view={module as HSEOperationsView} />;
   if (escalationViews.has(module as EscalationView)) return <SafetyBoard view={module as EscalationView} />;
   if (workControlViews.has(module as WorkControlView)) return <SafetyBoard view={module as WorkControlView} />;
   if (environmentalViews.has(module as EnvironmentalComplianceView)) return <SafetyBoard view={module as EnvironmentalComplianceView} />;
   if (section07Views.has(module as Section07View)) return <SafetyBoard view={module as Section07View} />;
   if (section08Views.has(module as SafetySystemsView)) return <SafetyBoard view={module as SafetySystemsView} />;
-  const view = allowed.has(module) ? module as "reports" | "actions" | "live-meeting" | "vision" | "risk" | "incidents" | "ncr" : "dashboard";
+  const view = allowed.has(module) ? module as "reports" | "actions" | "live-meeting" | "vision" | "risk" | "incidents" | "ncr" | "files" | "reports-documents" | "safety-signs" | "contracts" | "forms" | "invoices" : "dashboard";
   return <SafetyBoard view={view} />;
 }

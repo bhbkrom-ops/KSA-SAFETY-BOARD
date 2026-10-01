@@ -117,3 +117,31 @@ Direct fire gateway/ESP ingestion, certified panel integrations, Storage-backed 
 ### Deployment
 
 Vercel production deployment is READY for commit `be2d63b42840198e7406be8e1673c482df83aad1` at `https://ksasafetyboard.vercel.app`.
+
+## 09 — HSE Reports & Documents
+
+### Implemented
+
+Implemented the Section 09 route family: `/admin/files`, `/admin/reports-documents`, `/admin/reports-documents/safety-signs`, `/admin/contracts`, `/admin/forms`, and `/admin/invoices`. The Reports & Documents command center provides responsive live registers for controlled documents, standardized report export metadata, bilingual safety signs, HSE contracts, controlled forms, and invoices. It includes search, KPI summaries, loading/error/empty states, refresh, create flows, responsive navigation, print view, and an isolated white print canvas for safety-sign previews.
+
+### Database and permissions
+
+Migration `0017_hse_reports_documents.sql` was applied successfully to Supabase project `qazqzejfucknpmnkorqa`. It adds `hse_documents`, `safety_signs`, `hse_contracts`, `hse_forms`, `hse_invoices`, and `hse_report_exports`, with uniqueness/check constraints, indexes, authenticated grants, anonymous revocation, and staff-only RLS policies. Six permissions were added: `documents.read`, `documents.manage`, `safety_signs.manage`, `contracts.manage`, `forms.manage`, and `invoices.manage`.
+
+### API and workflow
+
+`/api/hse-reports-documents?resource=documents|signs|contracts|forms|invoices|exports` provides authenticated reads and staff-only creates, updates, and deletes. Server validation prevents empty required fields and constrains accepted resource payloads. The document endpoint also provides a signed-storage URL boundary with a five-minute expiry when a document has a configured Storage object, while external URLs remain explicitly marked as external. No localStorage or demo records are used.
+
+### Verification
+
+- `npm run lint` — PASS.
+- `npm run build` — PASS; 38 routes compiled, including `/admin/reports-documents/[view]` and `/api/hse-reports-documents`.
+- All six Section 09 routes — HTTP 200 through the production server on port 4100.
+- All six Section 09 resource reads without authentication — HTTP 401 structured JSON.
+- Public sandbox URL `https://4100-iqwne6u094xqgi90ttxt3-1f690cb1.sg2.manus.computer/admin/files` — HTTP 200.
+- `git diff --check` — PASS.
+- Secret scan — PASS; no credentials or private keys found.
+
+### Explicit gaps
+
+Authenticated browser CRUD persistence, direct Supabase Storage upload UI, automated PDF/DOC generation, QR resolution, formal bilingual report templates, and governed scheduler registration for recurring exports remain follow-up work for Sections 10–12 and the final quality gate. The current slice provides real persisted CRUD boundaries and print-safe sign output without claiming those later integrations are complete.
