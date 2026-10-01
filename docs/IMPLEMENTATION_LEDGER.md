@@ -27,3 +27,33 @@ Migration `0013_hse_compliance_work_control.sql` was applied to Supabase. It add
 ### Explicit gaps
 
 Authenticated browser CRUD, role-specific 403 tests, persisted reload tests, nested JSA steps/acknowledgements, LOTO point/lock sub-resource APIs, inspection observation/CAPA creation, audit finding CRUD, and print templates for formal permits/audits remain follow-up work. The current slice establishes the governed core and the primary lifecycle surfaces without pretending those detailed sub-workflows are complete. No permit activation, isolation release, or compliance closure is automated without an authorized user.
+
+## 06B — Environmental Measurements & Facility Regulatory Licenses
+
+### Implemented
+
+Added the previously orphaned `/admin/environmental-measurements` and `/admin/facility-regulatory-licenses` modules to the primary Assurance navigation and dynamic admin route. The Environmental Compliance command center provides real API-backed registers, filters, KPIs, create flows, CSV export, loading/error/empty states, expiry/schedule highlighting, responsive behavior, and print-compatible shared styling.
+
+### Database and workflow
+
+Migration `0014_environmental_measurements_facility_licenses.sql` was applied successfully to Supabase. It adds `environmental_measurements` and `facility_regulatory_licenses`, with validation checks, expiry/due indexes, staff-only RLS, grants, four new permissions, and `process_environmental_measurement_reminders(timestamptz)`. Reminder processing uses a bounded due-date predicate and idempotent `notification_outbox` keys; it creates follow-up notices only for configured owners. The system distinguishes PENDING/COMPLIANT/NON_COMPLIANT measurements and ACTIVE/EXPIRING_SOON/EXPIRED/PENDING_RENEWAL licenses.
+
+### API
+
+`/api/environmental-measurements` supports permission-scoped reads, type/status/schedule filtering, staff create/update/delete, server validation, derived schedule indicators, and the reminder-processing action. `/api/facility-regulatory-licenses` supports category/state filters, expiry-state derivation, staff create/update/delete, renewal fields, and structured JSON errors. No raw RTSP/secrets or privileged keys are returned.
+
+### Verification
+
+- `npm run lint` — PASS.
+- `npm run build` — PASS; 34 routes compiled, including both Section 06B APIs.
+- `/admin/environmental-measurements` — HTTP 200.
+- `/admin/facility-regulatory-licenses` — HTTP 200.
+- Both API reads without authentication — HTTP 401 structured JSON.
+- Unauthenticated environmental create — HTTP 401 structured JSON.
+- Supabase verification — both new tables exist with RLS enabled; permission count is 42.
+- Secret scan — PASS.
+- `git diff --check` — PASS.
+
+### Explicit gaps
+
+Authenticated browser persistence, evidence upload/storage, detailed facility renewal approval workflow, and production scheduler registration for invoking the reminder RPC remain follow-up items. The reminder logic is deployed as a secure callable RPC and does not claim unattended execution until a governed scheduler is connected.
