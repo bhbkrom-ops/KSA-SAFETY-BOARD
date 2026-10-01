@@ -41,7 +41,7 @@
 - [x] `npm run lint` passes with no warnings or errors.
 - [x] `npm run build` passes and generates the expected Next.js routes.
 - [x] Local production server returns HTTP 200 for `/api/health`, `/report`, and `/admin/dashboard`.
-- [ ] Push to `bhbkrom-ops/KSA-SAFETY-BOARD` — blocked by GitHub HTTP 403 permission denial.
+- [x] Push to `bhbkrom-ops/KSA-SAFETY-BOARD` verified on `main` at commit `fc39885`.
 - [ ] Authenticated route/session behavior verified in a real browser.
 - [ ] Target Vercel project/repository linkage verified.
 - [ ] Target deployment environment variables verified without exposing values.
@@ -51,4 +51,4 @@
 
 **IMPLEMENTED — VERIFICATION IN PROGRESS**
 
-The repository foundation and target database baseline are implemented locally and in Supabase. The system is not yet release-ready because GitHub push access, target Vercel linkage, authenticated runtime, storage policies, and full module gates remain incomplete.
+The repository foundation and target database baseline are implemented in GitHub and Supabase. The system is not yet release-ready because target Vercel linkage, authenticated runtime, storage policies, and full module gates remain incomplete.
