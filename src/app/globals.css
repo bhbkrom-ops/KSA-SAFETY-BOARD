@@ -124,3 +124,25 @@
 }
 
 .safety-pyramid-print{display:flex;align-items:center;flex-direction:column;gap:1.5mm;margin:5mm auto 0}.safety-pyramid-print>div{display:flex;align-items:center;justify-content:space-between;min-height:10mm;padding:2mm 4mm;border:1px solid #9eabad;background:#f5f7f7!important;color:#111!important}.safety-pyramid-print span{font-size:8pt;font-weight:700}.safety-pyramid-print strong{font-size:13pt}
+
+
+.safety-sign-document{display:flex;align-items:center;flex-direction:column;justify-content:center;text-align:center}
+.safety-sign-brand{position:absolute;top:13mm;left:14mm;right:14mm;display:flex;align-items:center;justify-content:space-between;gap:8mm;color:#173f50;font-size:9pt;font-weight:800}
+.safety-sign-brand img,.certificate-brand img{display:block;max-width:28mm!important;max-height:17mm!important;object-fit:contain}
+.safety-sign-category{margin-top:12mm;padding:2mm 6mm;border:2px solid #173f50;border-radius:2mm;color:#173f50;font-size:10pt;font-weight:800;text-transform:uppercase}
+.safety-sign-document h1{max-width:160mm;margin:10mm 0 4mm;font-size:31pt;line-height:1.05;text-transform:uppercase}
+.safety-sign-document h2{max-width:160mm;margin:0 0 6mm;font-size:26pt;line-height:1.25}
+.safety-sign-divider{width:95mm;height:2.5mm;margin:2mm 0 8mm;background:#173f50}
+.safety-sign-document p{max-width:150mm;margin:2mm 0;font-size:15pt;line-height:1.45}
+.safety-sign-document footer{position:absolute;right:14mm;bottom:12mm;left:14mm;display:flex;justify-content:space-between;gap:8mm;border-top:1px solid #aebbbc;padding-top:3mm;color:#5f7074;font-size:7.5pt}
+.certificate-brand{display:flex;align-items:center;gap:7mm;padding-bottom:5mm;border-bottom:2px solid #173f50}
+.certificate-brand>div{display:grid;gap:1mm}.certificate-brand span{color:#173f50;font-size:10pt;font-weight:800}.certificate-brand small{color:#63767b;font-size:7.5pt}
+.certificate-body{display:flex;align-items:center;flex-direction:column;justify-content:center;min-height:220mm;padding:12mm 8mm;text-align:center}
+.certificate-body .eyebrow{color:#5f7479;font-size:8pt;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+.certificate-body h1{margin:7mm 0 3mm;font-size:25pt}.certificate-body h2{margin:0 0 7mm;font-size:20pt}
+.certificate-holder{display:block;margin:3mm 0;color:#173f50;font-size:19pt}
+.certificate-meta{display:grid;grid-template-columns:repeat(4,1fr);width:100%;margin-top:14mm;border:1px solid #bcc7c8}
+.certificate-meta span{padding:4mm;border-right:1px solid #bcc7c8;color:#64777b;font-size:7.5pt}.certificate-meta span:last-child{border-right:0}.certificate-meta b{display:inline-block;margin-top:1.5mm;color:#111;font-size:9pt}
+.official-card-document{width:86mm!important;min-height:54mm!important;padding:5mm 6mm!important;border:1px solid #9daaaa;border-radius:3mm}
+.official-card-document .certificate-brand{padding-bottom:3mm}.official-card-document .certificate-brand img{max-width:18mm!important;max-height:11mm!important}.official-card-document .certificate-body{min-height:31mm;padding:3mm 0}.official-card-document .certificate-body h1{margin:2mm 0;font-size:11pt}.official-card-document .certificate-body h2{margin:0 0 2mm;font-size:9pt}.official-card-document .certificate-holder{margin:1mm 0;font-size:11pt}.official-card-document .certificate-meta{margin-top:2mm}.official-card-document .certificate-meta span{padding:1.5mm;font-size:5.5pt}.official-card-document .certificate-meta b{font-size:6.5pt}.official-card-document .controlled-document-footer{margin-top:2mm;padding-top:1.5mm;font-size:5pt}
+@media print{.official-card-document{margin:20mm auto!important;min-height:54mm!important}}
