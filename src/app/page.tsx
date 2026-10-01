@@ -1,5 +1,2 @@
-import { redirect } from "next/navigation";
-
-export default function Home() {
-  redirect("/admin/dashboard");
-}
+import LandingPage from "@/components/public-landing";
+export default function Home(){return <LandingPage/>;}
