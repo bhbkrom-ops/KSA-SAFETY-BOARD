@@ -8,6 +8,7 @@ const configs = {
   action_comments:{table:"action_comments",fields:["action_id","body"],filters:["action_id","created_by"]},
   action_evidence:{table:"action_evidence",fields:["action_id","attachment_id","evidence_url","evidence_type","description"],filters:["action_id","evidence_type"]},
   action_escalations:{table:"action_escalations",fields:["action_id","escalation_id"],filters:["action_id","escalation_id"]},
+  action_history:{table:"action_history",fields:["action_id","event_type","previous_data","new_data","reason","actor_id"],filters:["action_id","event_type","actor_id"]},
   jsa_steps:{table:"jsa_steps",fields:["jsa_id","step_no","task_step","hazards","controls","responsible_person","residual_risk","ppe"],filters:["jsa_id"]},
   jsa_acknowledgements:{table:"jsa_acknowledgements",fields:["jsa_id","user_id","acknowledgement"],filters:["jsa_id","user_id"]},
   moc_reviews:{table:"moc_reviews",fields:["moc_record_id","review_type","reviewer_id","decision","comments","reviewed_at"],filters:["moc_record_id","reviewer_id","decision"]},
@@ -69,10 +70,11 @@ export async function GET(request:NextRequest){
 export async function POST(request:NextRequest){
   const auth=await requireAuth(request);if(!isAuthContext(auth))return auth;if(!auth.isStaff)return fail("HSE staff access is required.",403);
   const body=await request.json().catch(()=>null) as Record<string,unknown>|null;const key=keyOf(cleanText(body?.resource,80));if(!key)return fail("A valid traceability resource is required.",400);
+  if(["action_history","workflow_events","safety_learning_notice_log","safety_learning_decisions","radio_transmissions"].includes(key as string))return fail("This traceability resource is append-only or system-generated.",409);
   if(key==="occupational_surveillance"&&!["super_admin","hse_manager"].includes(auth.profile.role_code))return fail("Occupational health surveillance requires HSE Manager or Super Admin.",403);
   const db=auth.client as any;const payload=payloadFor(key,body||{},auth.user.id);
   const {data,error}=await db.from(configs[key].table).insert(payload).select("*").single();if(error||!data)return fail(error?.message||"Traceability record could not be created.",422);
-  await db.from("audit_logs").insert({actor_id:auth.user.id,action:"traceability.created",entity_type:key,entity_id:data.id,metadata:{resource:key}});
+  await db.from("audit_logs").insert({actor_id:auth.user.id,event_type:"traceability.created",entity_type:key,entity_id:data.id,new_data:{resource:key,record_id:data.id}});
   return Response.json({ok:true,data},{status:201});
 }
 export async function PATCH(request:NextRequest){
@@ -82,7 +84,7 @@ export async function PATCH(request:NextRequest){
   if(key==="occupational_surveillance"&&!["super_admin","hse_manager"].includes(auth.profile.role_code))return fail("Occupational health surveillance requires HSE Manager or Super Admin.",403);
   const db=auth.client as any;const payload=payloadFor(key,body||{},auth.user.id);delete payload.created_by;delete payload.decided_by;delete payload.reviewed_by;delete payload.inspected_by;delete payload.recorded_by;delete payload.performed_by;
   const {data,error}=await db.from(configs[key].table).update(payload).eq("id",id).select("*").single();if(error||!data)return fail(error?.message||"Traceability record could not be updated.",422);
-  await db.from("audit_logs").insert({actor_id:auth.user.id,action:"traceability.updated",entity_type:key,entity_id:id,metadata:{resource:key}});
+  await db.from("audit_logs").insert({actor_id:auth.user.id,event_type:"traceability.updated",entity_type:key,entity_id:id,new_data:{resource:key,record_id:id}});
   return Response.json({ok:true,data});
 }
 export async function DELETE(request:NextRequest){
@@ -91,6 +93,6 @@ export async function DELETE(request:NextRequest){
   if(["action_history","workflow_events","safety_learning_notice_log","safety_learning_decisions","radio_transmissions"].includes(key as string))return fail("Append-only traceability records cannot be deleted.",409);
   if(key==="occupational_surveillance"&&!["super_admin","hse_manager"].includes(auth.profile.role_code))return fail("Occupational health surveillance requires HSE Manager or Super Admin.",403);
   const db=auth.client as any;const {error}=await db.from(configs[key].table).delete().eq("id",id);if(error)return fail(error.message,422);
-  await db.from("audit_logs").insert({actor_id:auth.user.id,action:"traceability.deleted",entity_type:key,entity_id:id,metadata:{resource:key}});
+  await db.from("audit_logs").insert({actor_id:auth.user.id,event_type:"traceability.deleted",entity_type:key,entity_id:id,new_data:{resource:key,record_id:id}});
   return Response.json({ok:true,data:{id}});
 }
