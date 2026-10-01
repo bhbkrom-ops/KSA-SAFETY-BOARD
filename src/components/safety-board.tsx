@@ -41,11 +41,12 @@ import LiveMeetingView from "@/components/live-meeting";
 import VisionCommandCenter, { type VisionView } from "@/components/vision-command-center";
 import OverviewCommandCenter, { type OverviewView } from "@/components/overview-command-center";
 import HSEOperationsCommandCenter, { type HSEOperationsView } from "@/components/hse-operations-command-center";
+import EscalationCommandCenter, { type EscalationView } from "@/components/escalation-command-center";
 import { navigationGroups, pathForRoute } from "@/lib/route-registry";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 
 type ModuleView = "reports" | "actions" | "risk" | "incidents" | "ncr";
-type View = OverviewView | ModuleView | HSEOperationsView | "live-meeting" | "vision" | "report";
+type View = OverviewView | ModuleView | HSEOperationsView | EscalationView | "live-meeting" | "vision" | "report";
 type Profile = Pick<Tables<"profiles">, "display_name" | "email" | "role_code" | "is_active">;
 type BoardRow = {
   id: string;
@@ -280,8 +281,9 @@ function BoardShell({ view, visionView, user, profile }: { view: Exclude<View, "
   const navigate = (next: View) => { router.push(pathForRoute(next)); if (next !== "report") setActive(next); };
   const signOut = () => { void supabase?.auth.signOut(); };
   const overviewViews: OverviewView[] = ["dashboard", "executive-hse", "safety-intelligence", "daily-operations-command", "hse-management-review", "hse-objectives", "environmental-aspects", "intelligence-reporting-center", "hse-assistant"];
+  const escalationViews: EscalationView[] = ["escalations", "escalations-history", "escalations-matrix"];
   const operationsViews: HSEOperationsView[] = ["hse-team", "employees", "import-center", "employee-violations", "safety-reporting", "mobile-field", "action-center", "workflow-center", "management-of-change", "hse-shift-handover", "monthly-hse-report", "monthly-hse-plan", "safety-learning", "chemicals", "risk-register", "critical-controls", "process-safety-barriers", "industrial-hygiene", "risk-assessment", "safety-pyramid"];
-  return <div className="app-shell"><Sidebar active={active} onNavigate={navigate} profile={profile} onSignOut={signOut} /><div className="main-area"><Topbar onSignOut={signOut} onOpenReport={() => navigate("reports")} /><main className="main-content">{overviewViews.includes(active as OverviewView) ? <OverviewCommandCenter userId={user.id} view={active as OverviewView} /> : operationsViews.includes(active as HSEOperationsView) ? <HSEOperationsCommandCenter view={active as HSEOperationsView} /> : active === "live-meeting" ? <LiveMeetingView user={user} /> : active === "vision" ? <VisionCommandCenter user={user} view={visionView ?? "dashboard"} /> : <RegisterView kind={active as ModuleView} user={user} />}</main><footer className="app-footer"><span>KSA SAFETY BOARD <b>·</b> Live operational workspace</span><span>Supabase <strong>connected</strong> <CircleDot size={10} /></span></footer></div></div>;
+  return <div className="app-shell"><Sidebar active={active} onNavigate={navigate} profile={profile} onSignOut={signOut} /><div className="main-area"><Topbar onSignOut={signOut} onOpenReport={() => navigate("reports")} /><main className="main-content">{overviewViews.includes(active as OverviewView) ? <OverviewCommandCenter userId={user.id} view={active as OverviewView} /> : operationsViews.includes(active as HSEOperationsView) ? <HSEOperationsCommandCenter view={active as HSEOperationsView} /> : escalationViews.includes(active as EscalationView) ? <EscalationCommandCenter view={active as EscalationView} /> : active === "live-meeting" ? <LiveMeetingView user={user} /> : active === "vision" ? <VisionCommandCenter user={user} view={visionView ?? "dashboard"} /> : <RegisterView kind={active as ModuleView} user={user} />}</main><footer className="app-footer"><span>KSA SAFETY BOARD <b>·</b> Live operational workspace</span><span>Supabase <strong>connected</strong> <CircleDot size={10} /></span></footer></div></div>;
 }
 
 function AuthGate({ view, visionView }: { view: View; visionView?: VisionView }) {
