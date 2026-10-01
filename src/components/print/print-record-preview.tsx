@@ -4,7 +4,7 @@
 import { useCallback,useEffect,useMemo,useState } from "react";
 import { ArrowLeft, Download, LoaderCircle, Printer, Share2 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { copyLink,exportJson,exportWord } from "@/lib/document-export";
+import { copyLink,exportCsv,exportJson,exportTableSvg,exportWord } from "@/lib/document-export";
 
 const labels:Record<string,string>={
  reference_no:"Reference",status:"Status",source:"Source",requirement:"Requirement",nonconformance:"Nonconformance",severity:"Severity",immediate_correction:"Immediate correction",root_cause:"Root cause",due_date:"Due date",verification:"Verification",effectiveness:"Effectiveness",
@@ -49,7 +49,7 @@ export default function PrintRecordPreview({template,id}:{template:string;id:str
  if(error)return <div className="standalone-print-state error"><strong>Document unavailable</strong><span>{error}</span><button onClick={()=>history.back()}>Back</button></div>;
  const record=data.record||{},branding=data.branding||{},related=data.related||{};
  const fileBase=`KSA-${template}-${record.reference_no||record.document_no||record.asset_no||record.id||"record"}`;
- const actions=<div className="standalone-print-actions" data-no-print><button onClick={()=>history.back()}><ArrowLeft size={15}/> Back</button><button onClick={()=>window.print()}><Printer size={15}/> Print / PDF</button><button onClick={()=>exportWord([record],titleMap[template]||"HSE Document",fileBase)}><Download size={15}/> Word</button><button onClick={()=>exportJson({record,related,branding},fileBase)}><Download size={15}/> JSON</button><button onClick={()=>void copyLink(location.href)}><Share2 size={15}/> Copy link</button></div>;
+ const actions=<div className="standalone-print-actions" data-no-print><button onClick={()=>history.back()}><ArrowLeft size={15}/> Back</button><button onClick={()=>window.print()}><Printer size={15}/> Print / PDF</button><button onClick={()=>exportCsv([record],fileBase)}><Download size={15}/> CSV</button><button onClick={()=>exportWord([record],titleMap[template]||"HSE Document",fileBase)}><Download size={15}/> Word</button><button onClick={()=>exportJson({record,related,branding},fileBase)}><Download size={15}/> JSON</button><button onClick={()=>void copyLink(location.href)}><Share2 size={15}/> Copy link</button>{template==="risk"&&related.hazards?.length>0&&<button onClick={()=>exportTableSvg(related.hazards,[{key:"hazard",label:"Hazard"},{key:"persons_at_risk",label:"Persons at risk"},{key:"likelihood",label:"Likelihood"},{key:"severity",label:"Severity"},{key:"existing_controls",label:"Existing controls"},{key:"additional_controls",label:"Additional controls"},{key:"residual_likelihood",label:"Residual L"},{key:"residual_severity",label:"Residual S"}],"Risk Assessment Table",`${fileBase}-table.svg`)}><Download size={15}/> Table SVG</button>}</div>;
  if(template==="safety-sign")return <div className="standalone-print-shell">{actions}<SafetySignDocument record={record} branding={branding}/></div>;
  if(template==="official-template")return <div className="standalone-print-shell">{actions}<OfficialTemplateDocument record={record} branding={branding}/></div>;
  return <div className="standalone-print-shell">
