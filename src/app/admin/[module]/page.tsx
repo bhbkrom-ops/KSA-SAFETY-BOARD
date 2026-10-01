@@ -25,7 +25,7 @@ const adminSystemViews = new Set<AdminSystemView>(["users", "activity", "plants"
 const operationsViews = new Set<HSEOperationsView>(["hse-team", "employees", "import-center", "employee-violations", "safety-reporting", "mobile-field", "action-center", "workflow-center", "management-of-change", "hse-shift-handover", "monthly-hse-report", "monthly-hse-plan", "safety-learning", "chemicals", "risk-register", "critical-controls", "process-safety-barriers", "industrial-hygiene", "risk-assessment", "safety-pyramid"]);
 
 export default async function ModulePage({ params }: ModulePageProps) {
-  const { module } = await params;
+  const { module } = await params;\n  if (module === "simops") return <SafetyBoard view="simops" />;
   if (overviewViews.has(module as OverviewView)) return <SafetyBoard view={module as OverviewView} />;
   if (safetyCommunicationViews.has(module as SafetyCommunicationView)) return <SafetyBoard view={module as SafetyCommunicationView} />;
   if (reportsDocumentsViews.has(module as ReportsDocumentsView)) return <SafetyBoard view={module as ReportsDocumentsView} />;
