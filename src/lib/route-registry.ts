@@ -1,6 +1,6 @@
-import { Activity, BarChart3, Camera, ClipboardCheck, FileText, FileWarning, LayoutDashboard, Leaf, ListChecks, MessageSquareText, Radio, ShieldAlert, Siren, Target, type LucideIcon } from "lucide-react";
+import { Activity, BarChart3, Camera, ClipboardCheck, FileText, FileWarning, FlaskConical, GitBranch, HardHat, LayoutDashboard, Leaf, ListChecks, MessageSquareText, Radio, ShieldAlert, Siren, Target, Users, Wrench, type LucideIcon } from "lucide-react";
 
-export type BoardRouteId = "dashboard" | "executive-hse" | "safety-intelligence" | "daily-operations-command" | "hse-management-review" | "hse-objectives" | "environmental-aspects" | "intelligence-reporting-center" | "hse-assistant" | "reports" | "actions" | "live-meeting" | "vision" | "risk" | "incidents" | "ncr" | "report";
+export type BoardRouteId = "dashboard" | "executive-hse" | "safety-intelligence" | "daily-operations-command" | "hse-management-review" | "hse-objectives" | "environmental-aspects" | "intelligence-reporting-center" | "hse-assistant" | "reports" | "actions" | "live-meeting" | "vision" | "risk" | "incidents" | "ncr" | "hse-team" | "employees" | "import-center" | "employee-violations" | "safety-reporting" | "mobile-field" | "action-center" | "workflow-center" | "management-of-change" | "hse-shift-handover" | "monthly-hse-report" | "monthly-hse-plan" | "safety-learning" | "chemicals" | "risk-register" | "critical-controls" | "process-safety-barriers" | "industrial-hygiene" | "risk-assessment" | "safety-pyramid" | "report";
 export type ProtectedRouteId = Exclude<BoardRouteId, "report">;
 export type BoardRoute = { id: BoardRouteId; path: string; label: string; group: "COMMAND CENTER" | "ASSURANCE" | "PUBLIC"; icon: LucideIcon; permission: string; protected: boolean; status: "active" | "planned" };
 
@@ -21,10 +21,30 @@ export const routeRegistry: Record<BoardRouteId, BoardRoute> = {
   risk: { id: "risk", path: "/admin/risk", label: "Risk & JSA", group: "ASSURANCE", icon: ShieldAlert, permission: "risk.read", protected: true, status: "active" },
   incidents: { id: "incidents", path: "/admin/incidents", label: "Incidents", group: "ASSURANCE", icon: Siren, permission: "incidents.read", protected: true, status: "active" },
   ncr: { id: "ncr", path: "/admin/ncr", label: "NCR / CAPA", group: "ASSURANCE", icon: ClipboardCheck, permission: "ncr.read", protected: true, status: "active" },
+  "hse-team": { id: "hse-team", path: "/admin/hse-team", label: "HSE Safety Team", group: "ASSURANCE", icon: Users, permission: "hse.operations.read", protected: true, status: "active" },
+  employees: { id: "employees", path: "/admin/employees", label: "Workforce Records", group: "ASSURANCE", icon: Users, permission: "hse.operations.read", protected: true, status: "active" },
+  "import-center": { id: "import-center", path: "/admin/import-center", label: "Data Import Center", group: "ASSURANCE", icon: FileText, permission: "hse.import.manage", protected: true, status: "active" },
+  "employee-violations": { id: "employee-violations", path: "/admin/employee-violations", label: "Workforce Violations", group: "ASSURANCE", icon: ShieldAlert, permission: "hse.operations.manage", protected: true, status: "active" },
+  "safety-reporting": { id: "safety-reporting", path: "/admin/safety-reporting", label: "Safety Reporting", group: "ASSURANCE", icon: FileWarning, permission: "reports.read", protected: true, status: "active" },
+  "mobile-field": { id: "mobile-field", path: "/admin/mobile-field", label: "Mobile Field QR", group: "ASSURANCE", icon: Target, permission: "reports.create", protected: true, status: "active" },
+  "action-center": { id: "action-center", path: "/admin/action-center", label: "CAPA & Action Center", group: "ASSURANCE", icon: ListChecks, permission: "actions.read", protected: true, status: "active" },
+  "workflow-center": { id: "workflow-center", path: "/admin/workflow-center", label: "HSE Workflow Center", group: "ASSURANCE", icon: GitBranch, permission: "hse.operations.read", protected: true, status: "active" },
+  "management-of-change": { id: "management-of-change", path: "/admin/management-of-change", label: "Management of Change", group: "ASSURANCE", icon: Wrench, permission: "hse.operations.manage", protected: true, status: "active" },
+  "hse-shift-handover": { id: "hse-shift-handover", path: "/admin/hse-shift-handover", label: "Shift Handover", group: "ASSURANCE", icon: GitBranch, permission: "hse.operations.manage", protected: true, status: "active" },
+  "monthly-hse-report": { id: "monthly-hse-report", path: "/admin/monthly-hse-report", label: "Monthly HSE Report", group: "ASSURANCE", icon: FileText, permission: "hse.operations.read", protected: true, status: "active" },
+  "monthly-hse-plan": { id: "monthly-hse-plan", path: "/admin/monthly-hse-plan", label: "Monthly HSE Plan", group: "ASSURANCE", icon: Target, permission: "hse.operations.manage", protected: true, status: "active" },
+  "safety-learning": { id: "safety-learning", path: "/admin/safety-learning", label: "Safety Learning", group: "ASSURANCE", icon: Siren, permission: "hse.operations.manage", protected: true, status: "active" },
+  chemicals: { id: "chemicals", path: "/admin/chemicals", label: "Chemicals & SDS", group: "ASSURANCE", icon: FlaskConical, permission: "hse.operations.manage", protected: true, status: "active" },
+  "risk-register": { id: "risk-register", path: "/admin/risk-register", label: "Central Risk Register", group: "ASSURANCE", icon: ShieldAlert, permission: "risk.read", protected: true, status: "active" },
+  "critical-controls": { id: "critical-controls", path: "/admin/critical-controls", label: "Critical Controls", group: "ASSURANCE", icon: ShieldAlert, permission: "hse.operations.manage", protected: true, status: "active" },
+  "process-safety-barriers": { id: "process-safety-barriers", path: "/admin/process-safety-barriers", label: "Process Safety Barriers", group: "ASSURANCE", icon: HardHat, permission: "hse.operations.read", protected: true, status: "active" },
+  "industrial-hygiene": { id: "industrial-hygiene", path: "/admin/industrial-hygiene", label: "Industrial Hygiene", group: "ASSURANCE", icon: FlaskConical, permission: "hse.operations.manage", protected: true, status: "active" },
+  "risk-assessment": { id: "risk-assessment", path: "/admin/risk-assessment", label: "Risk Assessment 5×5", group: "ASSURANCE", icon: ShieldAlert, permission: "risk.read", protected: true, status: "active" },
+  "safety-pyramid": { id: "safety-pyramid", path: "/admin/safety-pyramid", label: "Safety Pyramid", group: "ASSURANCE", icon: Target, permission: "overview.read", protected: true, status: "active" },
   report: { id: "report", path: "/report", label: "Public safety report", group: "PUBLIC", icon: FileWarning, permission: "reports.create", protected: false, status: "active" },
 };
 
 export const protectedRouteIds = Object.values(routeRegistry).filter((route) => route.protected && route.status === "active").map((route) => route.id as ProtectedRouteId);
 export const moduleRouteIds = protectedRouteIds.filter((id) => id !== "dashboard") as Array<Exclude<ProtectedRouteId, "dashboard">>;
-export const navigationGroups = [{ label: "COMMAND CENTER", items: [routeRegistry.dashboard, routeRegistry.reports, routeRegistry.actions, routeRegistry["live-meeting"], routeRegistry.vision] }, { label: "ASSURANCE", items: [routeRegistry.risk, routeRegistry.incidents, routeRegistry.ncr] }] as const;
+export const navigationGroups = [{ label: "COMMAND CENTER", items: [routeRegistry.dashboard, routeRegistry.reports, routeRegistry.actions, routeRegistry["live-meeting"], routeRegistry.vision] }, { label: "ASSURANCE", items: [routeRegistry.risk, routeRegistry.incidents, routeRegistry.ncr, routeRegistry["hse-team"], routeRegistry.employees, routeRegistry["action-center"], routeRegistry["workflow-center"], routeRegistry["management-of-change"], routeRegistry["monthly-hse-plan"], routeRegistry["critical-controls"], routeRegistry["industrial-hygiene"]] }] as const;
 export function pathForRoute(id: BoardRouteId) { return routeRegistry[id].path; }
