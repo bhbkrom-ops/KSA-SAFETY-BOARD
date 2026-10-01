@@ -1,5 +1,2 @@
-import SafetyBoard from "@/components/safety-board";
-
-export default function PublicReportPage() {
-  return <SafetyBoard view="report" />;
-}
+import PublicReporting from "@/components/public-reporting";
+export default function PublicReportPage(){return <PublicReporting/>;}
