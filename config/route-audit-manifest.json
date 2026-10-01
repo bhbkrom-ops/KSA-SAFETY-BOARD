@@ -324,6 +324,10 @@
     "work_areas": "facilities",
     "work_control_history": "work-control",
     "official_templates": "reports-documents",
-    "report_attachments": "public-reporting"
+    "report_attachments": "public-reporting",
+    "critical_control_verifications": "critical-controls",
+    "employee_directory": "workforce",
+    "facility_regulatory_licenses": "compliance",
+    "lmra_assessments": "work-control"
   }
 }
