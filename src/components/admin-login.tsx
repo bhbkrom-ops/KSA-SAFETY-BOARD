@@ -1,5 +1,6 @@
 "use client";
 import { FormEvent,useEffect,useState } from "react";
+import Link from "next/link";
 import { useRouter,useSearchParams } from "next/navigation";
 import { CheckCircle2, LoaderCircle, ShieldCheck } from "lucide-react";
 import { supabase } from "@/lib/supabase";
@@ -65,7 +66,7 @@ export default function AdminLogin(){
         <button className="primary-button wide" disabled={busy}>{busy?<><LoaderCircle className="spin" size={16}/>Verifying…</>:mode==="mfa"?"Verify MFA":mode==="reset"?"Send recovery instructions":"Sign in"}</button>
       </form>
       <div className="login-links">{mode==="signin"?<button onClick={()=>setMode("reset")}>Forgot password?</button>:mode==="reset"?<button onClick={()=>setMode("signin")}>Back to sign in</button>:null}</div>
-      <a className="login-public-link" href="/report">Open public safety reporting</a>
+      <Link className="login-public-link" href="/report">Open public safety reporting</Link>
     </div></section>
   </main>;
 }
