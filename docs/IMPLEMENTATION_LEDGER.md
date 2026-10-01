@@ -57,3 +57,31 @@ Migration `0014_environmental_measurements_facility_licenses.sql` was applied su
 ### Explicit gaps
 
 Authenticated browser persistence, evidence upload/storage, detailed facility renewal approval workflow, and production scheduler registration for invoking the reminder RPC remain follow-up items. The reminder logic is deployed as a secure callable RPC and does not claim unattended execution until a governed scheduler is connected.
+
+## 07 — Licenses, Competency & Authorizations
+
+### Implemented
+
+Implemented the complete Section 07 route family and kept the existing `/admin/competency` concept as the canonical unified competency register, rather than creating a competing model. New routes are `/admin/licenses`, `/admin/trainings`, `/admin/training-attendance`, `/admin/equipment-auth`, `/admin/training-matrix`, `/admin/competency`, `/admin/official-templates`, and `/admin/enterprise-reports`. They are registered in the shared route registry and exposed through the Licenses & Competency navigation entry.
+
+### Database and relationships
+
+Migration `0015_licenses_training_competency_authorizations.sql` was applied successfully to Supabase. It adds `licenses`, `trainings`, `training_attendance`, `equipment_authorizations`, `training_matrix`, `competency`, and `official_templates`, each with RLS, staff policies, grants, timestamps, uniqueness/check constraints, and indexes. Employee linkage uses `employee_directory` references plus stable employee ID/name fields for controlled historical display. Competency records can link back to license, authorization, and matrix records.
+
+### API and UI
+
+`/api/competency?resource=...` provides authenticated CRUD for the Section 07 resources, including attendance records and template records. `/api/authorization-reports?dataset=...` provides permission-scoped datasets for equipment authorizations, licenses, training records, training matrix, and competency assessments. The command center includes real loading/error/empty states, search, status filtering, create/edit/delete, destructive confirmation, CSV export, print action with white print CSS, bilingual template fields, attendance, and responsive navigation.
+
+### Verification
+
+- `npm run lint` — PASS.
+- `npm run build` — PASS; 36 routes compiled.
+- All eight Section 07 routes — HTTP 200 through the production server.
+- All Section 07 API reads and unauthenticated create — HTTP 401 structured JSON.
+- Supabase verification — all seven Section 07 tables exist with RLS enabled; permission count is 54.
+- Secret scan — PASS.
+- `git diff --check` — PASS.
+
+### Explicit gaps
+
+Authenticated browser persistence, employee picker/search integration, photo upload/storage validation, QR generation/resolution, and standalone PDF/certificate preview routes require the shared document/Storage phase. The print action is implemented with a white print-safe surface, but the official document architect phase will harden A4/card templates and QR behavior in Section 12.

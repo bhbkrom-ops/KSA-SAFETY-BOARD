@@ -5,6 +5,7 @@ import type { HSEOperationsView } from "@/components/hse-operations-command-cent
 import type { EscalationView } from "@/components/escalation-command-center";
 import type { WorkControlView } from "@/components/work-control-command-center";
 import type { EnvironmentalComplianceView } from "@/components/environmental-compliance-command-center";
+import type { Section07View } from "@/components/licenses-competency-command-center";
 
 type ModulePageProps = { params: Promise<{ module: string }> };
 const allowed = new Set<string>(moduleRouteIds);
@@ -12,6 +13,7 @@ const overviewViews = new Set<OverviewView>(["executive-hse", "safety-intelligen
 const escalationViews = new Set<EscalationView>(["escalations", "escalations-history", "escalations-matrix"]);
 const workControlViews = new Set<WorkControlView>(["permit-compliance-center", "inspections", "audits", "compliance", "loto", "permits"]);
 const environmentalViews = new Set<EnvironmentalComplianceView>(["environmental-measurements", "facility-regulatory-licenses"]);
+const section07Views = new Set<Section07View>(["licenses", "trainings", "training-attendance", "equipment-auth", "training-matrix", "competency", "official-templates", "enterprise-reports"]);
 const operationsViews = new Set<HSEOperationsView>(["hse-team", "employees", "import-center", "employee-violations", "safety-reporting", "mobile-field", "action-center", "workflow-center", "management-of-change", "hse-shift-handover", "monthly-hse-report", "monthly-hse-plan", "safety-learning", "chemicals", "risk-register", "critical-controls", "process-safety-barriers", "industrial-hygiene", "risk-assessment", "safety-pyramid"]);
 
 export default async function ModulePage({ params }: ModulePageProps) {
@@ -21,6 +23,7 @@ export default async function ModulePage({ params }: ModulePageProps) {
   if (escalationViews.has(module as EscalationView)) return <SafetyBoard view={module as EscalationView} />;
   if (workControlViews.has(module as WorkControlView)) return <SafetyBoard view={module as WorkControlView} />;
   if (environmentalViews.has(module as EnvironmentalComplianceView)) return <SafetyBoard view={module as EnvironmentalComplianceView} />;
+  if (section07Views.has(module as Section07View)) return <SafetyBoard view={module as Section07View} />;
   const view = allowed.has(module) ? module as "reports" | "actions" | "live-meeting" | "vision" | "risk" | "incidents" | "ncr" : "dashboard";
   return <SafetyBoard view={view} />;
 }
