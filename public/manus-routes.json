@@ -1,0 +1,8 @@
+{
+  "routes": [
+    { "path": "/", "title": "Safety Board home" },
+    { "path": "/report", "title": "Public safety report" },
+    { "path": "/admin/dashboard", "title": "Safety command center" },
+    { "path": "/admin/:module", "title": "Safety module register" }
+  ]
+}
