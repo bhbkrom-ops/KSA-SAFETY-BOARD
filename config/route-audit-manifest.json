@@ -176,12 +176,18 @@
     }
   ],
   "apiIntentionalNoDirectUiCaller": [
-    "/api/health",
-    "/api/cron/monthly-hse",
-    "/api/public-branding",
     "/api/auth/bootstrap",
+    "/api/auth/logout",
     "/api/auth/me",
-    "/api/auth/logout"
+    "/api/cron/monthly-hse",
+    "/api/health",
+    "/api/hse-management-review-items",
+    "/api/public-branding",
+    "/api/safety-intelligence",
+    "/api/safety-reporting-identity",
+    "/api/traceability",
+    "/api/vision-settings",
+    "/api/weather-current"
   ],
   "tableOwnerRules": [
     {
@@ -329,5 +335,43 @@
     "employee_directory": "workforce",
     "facility_regulatory_licenses": "compliance",
     "lmra_assessments": "work-control"
-  }
+  },
+  "apiNoCallerDecisions": [
+    {
+      "endpoint": "/api/hse-management-review-items",
+      "classification": "hidden-backend-contract",
+      "owner": "management-review",
+      "reason": "Governed agenda-item CRUD contract; current overview UI uses the parent review endpoint and does not yet expose item editing."
+    },
+    {
+      "endpoint": "/api/safety-intelligence",
+      "classification": "integration-contract",
+      "owner": "overview",
+      "reason": "Dedicated permission-scoped intelligence contract retained for integrations; current UI consumes the shared overview snapshot."
+    },
+    {
+      "endpoint": "/api/safety-reporting-identity",
+      "classification": "privileged-backend-contract",
+      "owner": "public-reporting",
+      "reason": "Manager/Super Admin audited reporter-identity reveal action; intentionally not invoked by public UI."
+    },
+    {
+      "endpoint": "/api/traceability",
+      "classification": "backend-contract",
+      "owner": "cross-module-traceability",
+      "reason": "Generic allowlisted cross-module relationship API used as an integration/administrative contract."
+    },
+    {
+      "endpoint": "/api/vision-settings",
+      "classification": "hidden-backend-contract",
+      "owner": "vision",
+      "reason": "Persisted Vision settings CRUD contract for hidden Vision settings surface."
+    },
+    {
+      "endpoint": "/api/weather-current",
+      "classification": "integration-boundary",
+      "owner": "dashboard",
+      "reason": "Safe weather-provider boundary; returns not_configured until provider credentials/integration are added."
+    }
+  ]
 }
