@@ -19,6 +19,8 @@ const families:Record<string,{table:string,fields:string}> = {
   "safety-sign":{table:"safety_signs",fields:"*"},
   "official-template":{table:"official_templates",fields:"*"},
   "monthly-hse":{table:"safety_monthly_statistics",fields:"*"},
+  "monthly-hse-report":{table:"hse_operation_records",fields:"*"},
+  "safety-pyramid":{table:"hse_operation_records",fields:"*"},
 };
 const fail=(message:string,status=422)=>Response.json({ok:false,error:message},{status});
 export async function GET(request:NextRequest){
@@ -31,7 +33,7 @@ export async function GET(request:NextRequest){
     db.from("system_settings").select("value").eq("key","branding").maybeSingle(),
     db.from("system_settings").select("value").eq("key","print_templates").maybeSingle(),
   ]);
-  if(recordError)return fail(recordError.message,500);if(!record)return fail("Record not found or not accessible.",404);
+  if(recordError)return fail(recordError.message,500);if(!record)return fail("Record not found or not accessible.",404);if(template==="monthly-hse-report"&&record.resource_type!=="monthly_report")return fail("Record is not a Monthly HSE Report.",409);if(template==="safety-pyramid"&&record.resource_type!=="safety_pyramid")return fail("Record is not a Safety Pyramid record.",409);
   let related:any={};
   if(template==="risk"){const {data,error}=await db.from("risk_hazards").select("*").eq("assessment_id",id).order("created_at");if(error)return fail(error.message,500);related.hazards=data||[];}
   if(template==="ncr"){const {data,error}=await db.from("capa").select("*,action:actions(*)").eq("ncr_id",id);if(error)return fail(error.message,500);related.capa=data||[];}
