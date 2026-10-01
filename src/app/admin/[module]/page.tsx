@@ -9,6 +9,7 @@ import type { Section07View } from "@/components/licenses-competency-command-cen
 import type { SafetySystemsView } from "@/components/safety-systems-command-center";
 import type { ReportsDocumentsView } from "@/components/hse-reports-documents-command-center";
 import type { SafetyCommunicationView } from "@/components/safety-communication-command-center";
+import type { AdminSystemView } from "@/components/admin-system-command-center";
 
 type ModulePageProps = { params: Promise<{ module: string }> };
 const allowed = new Set<string>(moduleRouteIds);
@@ -20,6 +21,7 @@ const section07Views = new Set<Section07View>(["licenses", "trainings", "trainin
 const section08Views = new Set<SafetySystemsView>(["life-safety-operations", "equipment-safety", "assets", "contractor-safety", "visitors", "safety-map", "fire-emergency-command", "emergency-response", "emergency", "fire-protection"]);
 const safetyCommunicationViews = new Set<SafetyCommunicationView>(["gamification", "sections", "posts", "safety-radio", "inbound-inbox", "email-settings", "notification-rules"]);
 const reportsDocumentsViews = new Set<ReportsDocumentsView>(["files", "reports-documents", "safety-signs", "contracts", "forms", "invoices"]);
+const adminSystemViews = new Set<AdminSystemView>(["users", "activity", "plants", "integrations", "system-readiness", "settings"]);
 const operationsViews = new Set<HSEOperationsView>(["hse-team", "employees", "import-center", "employee-violations", "safety-reporting", "mobile-field", "action-center", "workflow-center", "management-of-change", "hse-shift-handover", "monthly-hse-report", "monthly-hse-plan", "safety-learning", "chemicals", "risk-register", "critical-controls", "process-safety-barriers", "industrial-hygiene", "risk-assessment", "safety-pyramid"]);
 
 export default async function ModulePage({ params }: ModulePageProps) {
@@ -27,6 +29,7 @@ export default async function ModulePage({ params }: ModulePageProps) {
   if (overviewViews.has(module as OverviewView)) return <SafetyBoard view={module as OverviewView} />;
   if (safetyCommunicationViews.has(module as SafetyCommunicationView)) return <SafetyBoard view={module as SafetyCommunicationView} />;
   if (reportsDocumentsViews.has(module as ReportsDocumentsView)) return <SafetyBoard view={module as ReportsDocumentsView} />;
+  if (adminSystemViews.has(module as AdminSystemView)) return <SafetyBoard view={module as AdminSystemView} />;
   if (operationsViews.has(module as HSEOperationsView)) return <SafetyBoard view={module as HSEOperationsView} />;
   if (escalationViews.has(module as EscalationView)) return <SafetyBoard view={module as EscalationView} />;
   if (workControlViews.has(module as WorkControlView)) return <SafetyBoard view={module as WorkControlView} />;
