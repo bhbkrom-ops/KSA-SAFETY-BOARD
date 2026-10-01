@@ -117,7 +117,13 @@ for(const [table,files] of usedTables){
   if(!productionTables.has(table)) report.checks.resource_table_missing_in_production.push({table,files:[...new Set(files)]});
 }
 for(const legacy of manifest.legacyResources||[]){
-  if(legacy.policy==="forbidden"&&usedTables.has(legacy.name)) report.checks.resource_table_missing_in_production.push({table:legacy.name,files:[...new Set(usedTables.get(legacy.name))],reason:"forbidden legacy resource; use "+legacy.replacement});
+  if(legacy.policy==="forbidden"){
+    const references=sourceFiles.filter((p)=>read(p).includes(legacy.name));
+    if(references.length) report.checks.resource_table_missing_in_production.push({table:legacy.name,files:references,reason:"forbidden legacy resource; use "+legacy.replacement});
+  }
+  if(legacy.policy==="must-not-reintroduce"&&exists(legacy.name)){
+    report.checks.source_page_not_imported.push({file:legacy.name,reason:"forbidden orphan source page; use "+legacy.replacement});
+  }
 }
 
 const ownerRules=(manifest.tableOwnerRules||[]).map((x)=>({...x,re:new RegExp(x.pattern)}));
