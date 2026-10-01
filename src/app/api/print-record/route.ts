@@ -14,6 +14,7 @@ const families:Record<string,{table:string,fields:string}> = {
   license:{table:"licenses",fields:"*"},
   training:{table:"trainings",fields:"*"},
   asset:{table:"safety_assets",fields:"*"},
+  "equipment-passport":{table:"equipment_passports",fields:"*"},
   visitor:{table:"visitors",fields:"*"},
   "safety-sign":{table:"safety_signs",fields:"*"},
   "official-template":{table:"official_templates",fields:"*"},
