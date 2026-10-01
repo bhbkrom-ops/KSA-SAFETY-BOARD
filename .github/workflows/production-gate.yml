@@ -1,8 +1,9 @@
-name: Section 11 Build Gate
+name: KSA Safety Board Production Gate
 on:
   push:
     branches:
-      - continue-section-11
+      - main
+      - "section-*"
   pull_request:
     branches:
       - main
