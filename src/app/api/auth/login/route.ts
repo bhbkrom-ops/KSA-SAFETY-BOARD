@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { bearer,passwordPolicy,PRIVILEGED_ROLES,publicAuthClient,recordAuthEvent,safeNext,serviceClient,verifiedJwtClaims } from "@/lib/auth-security";
+import { bearer,passwordPolicy,PRIVILEGED_ROLES,publicAuthClient,recordAuthEvent,safeNext,serviceClient } from "@/lib/auth-security";
 
 const json=(body:unknown,status=200)=>Response.json(body,{status});
 const genericLoginError="The email, password, or account state could not be verified.";
