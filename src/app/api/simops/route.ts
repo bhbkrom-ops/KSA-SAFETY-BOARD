@@ -99,7 +99,7 @@ export async function POST(request:NextRequest){
     return Response.json({ok:true,data:{detected:rows.length}});
   }
   if(action==="create_rule"){
-    if(!auth.isAdmin)return fail("Conflict rule governance requires Admin/Manager access.",403);
+    if(!["super_admin","hse_manager"].includes(auth.profile.role_code))return fail("Conflict rule governance requires Admin/Manager access.",403);
     const {data,error}=await auth.client.from("simops_conflict_rules").insert({
       rule_code:text(body.rule_code,80),name:text(body.name,180),activity_type_a:text(body.activity_type_a,60),activity_type_b:text(body.activity_type_b,60),
       severity:text(body.severity,20)||"high",rationale:text(body.rationale,2000),required_controls:Array.isArray(body.required_controls)?body.required_controls:[],
