@@ -113,3 +113,7 @@ Migration `0016_safety_systems_emergency_preparedness.sql` was applied successfu
 ### Explicit gaps
 
 Direct fire gateway/ESP ingestion, certified panel integrations, Storage-backed floor-plan uploads, QR resolution routes, contractor document signed-upload flow, automated alarm notification outbox, and authenticated browser CRUD persistence remain integration work. The current implementation intentionally exposes truthful persisted infrastructure state and does not fabricate live alarms or stream connectivity.
+
+### Deployment
+
+Vercel production deployment is READY for commit `be2d63b42840198e7406be8e1673c482df83aad1` at `https://ksasafetyboard.vercel.app`.
