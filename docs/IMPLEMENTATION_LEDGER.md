@@ -57,7 +57,7 @@
 - [x] Vision tables exist in target Supabase with RLS enabled.
 - [x] Vision permissions, indexes, audit triggers, and Realtime publication are applied.
 - [x] Vision API handlers and nested routes compile in production build.
-- [x] Vercel project `krom5/ksa-safety-board` is linked to `bhbkrom-ops/KSA-SAFETY-BOARD`; latest production deployment verified at the previous Live Collaboration commit.
+- [x] Vercel project `krom5/ksa-safety-board` is linked to `bhbkrom-ops/KSA-SAFETY-BOARD`; Vision production deployment `dpl_AhF5pP5hCManS8ingiXgpDEVhGgF` verified READY at commit `55ce69c`.
 - [x] Vision source scan found no RTSP credential, service-role key, device token, or private key in source/migrations.
 - [ ] Authenticated route/session behavior verified in a real browser.
 - [ ] Target Vercel project/repository linkage verified.
@@ -66,6 +66,6 @@
 
 ## Status
 
-**IMPLEMENTED — DEPLOYMENT PENDING VISION COMMIT**
+**IMPLEMENTED — DEPLOYED, AUTHENTICATED ACCEPTANCE PENDING**
 
-The repository foundation, Live Collaboration slice, and Vision slice are implemented locally and in Supabase. The Vision commit is ready to push; Vercel is correctly linked and should deploy from `main`. Production readiness still requires authenticated browser CRUD/Realtime verification, actual ESP ingestion/stream gateway integration, storage/recording policies, and the remaining module gates.
+The repository foundation, Live Collaboration slice, and Vision slice are implemented in GitHub, Supabase, and the linked Vercel production deployment. Production readiness still requires authenticated browser CRUD/Realtime verification, actual ESP ingestion/stream gateway integration, storage/recording policies, and the remaining module gates.
