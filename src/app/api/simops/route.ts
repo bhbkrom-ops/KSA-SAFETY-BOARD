@@ -7,7 +7,7 @@ const fail=(error:string,status=422)=>Response.json({ok:false,error},{status});
 const bodyOf=async(request:NextRequest)=>await request.json().catch(()=>null) as Json|null;
 const text=(v:unknown,max=500)=>cleanText(v,max);
 const iso=(v:unknown)=>{const s=text(v,80);if(!s)return null;const d=new Date(s);return Number.isNaN(d.getTime())?null:d.toISOString();};
-const sameLocation=(a:string,b:string)=>a.trim().toLowerCase()===b.trim().toLowerCase();
+const sameLocation=(a:string,b:string)=>{const x=a.trim().toLowerCase(),y=b.trim().toLowerCase();return x===y||(x.length>=3&&y.length>=3&&(x.includes(y)||y.includes(x)));};
 const overlaps=(a:{start_at:string;end_at:string},b:{start_at:string;end_at:string})=>new Date(a.start_at)<new Date(b.end_at)&&new Date(b.start_at)<new Date(a.end_at);
 
 export async function GET(request:NextRequest){
@@ -30,12 +30,17 @@ export async function GET(request:NextRequest){
       if(a.error)return fail(a.error.message,500);if(c.error)return fail(c.error.message,500);
       activities=(a.data||[]) as Json[];conflicts=(c.data||[]) as Json[];
     }
-    const allConflicts=(await auth.client.from("simops_conflicts").select("id,severity,status,rule_id,plan_id")).data||[];
+    const allConflicts=(await auth.client.from("simops_conflicts").select("id,severity,status,rule_id,plan_id,activity_a_id,activity_b_id")).data||[];
+    const planStarts=new Map((plansRes.data||[]).map(p=>[p.id,new Date(p.window_start).getTime()]));
+    const unresolved=allConflicts.filter(x=>!["controlled","resolved","accepted"].includes(x.status));
+    const activityConflictCounts=new Map<string,number>();
+    for(const c of unresolved){for(const id of [c.activity_a_id,c.activity_b_id])activityConflictCounts.set(id,(activityConflictCounts.get(id)||0)+1);}
     const analytics={
       open_conflicts:allConflicts.filter(x=>!["resolved","accepted"].includes(x.status)).length,
       critical_conflicts:allConflicts.filter(x=>x.severity==="critical"&&!["resolved","accepted"].includes(x.status)).length,
-      unresolved_before_start:allConflicts.filter(x=>!["controlled","resolved","accepted"].includes(x.status)).length,
-      conflict_categories:new Set(allConflicts.map(x=>x.rule_id)).size
+      unresolved_before_start:unresolved.filter(x=>(planStarts.get(x.plan_id)||0)>Date.now()).length,
+      conflict_categories:new Set(allConflicts.map(x=>x.rule_id)).size,
+      repeat_conflicting_activities:[...activityConflictCounts.values()].filter(count=>count>1).length
     };
     return Response.json({ok:true,data:{plans:plansRes.data||[],selected_plan_id:selected,activities,conflicts,rules:rulesRes.data||[],analytics}});
   }catch(e){return fail(e instanceof Error?e.message:"SIMOPS data could not be loaded.",500);}
@@ -96,7 +101,9 @@ export async function POST(request:NextRequest){
       const {error}=await auth.client.from("simops_conflicts").upsert(rows,{onConflict:"plan_id,activity_a_id,activity_b_id,rule_id",ignoreDuplicates:true});
       if(error)return fail(error.message,500);
     }
-    return Response.json({ok:true,data:{detected:rows.length}});
+    const {error:scanError}=await auth.client.from("simops_plans").update({last_conflict_scan_at:new Date().toISOString(),last_conflict_scan_by:auth.user.id,updated_by:auth.user.id}).eq("id",planId);
+    if(scanError)return fail(scanError.message,500);
+    return Response.json({ok:true,data:{detected:rows.length,scan_completed:true}});
   }
   if(action==="create_rule"){
     if(!["super_admin","hse_manager"].includes(auth.profile.role_code))return fail("Conflict rule governance requires Admin/Manager access.",403);
