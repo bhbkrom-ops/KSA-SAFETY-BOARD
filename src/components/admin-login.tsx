@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter,useSearchParams } from "next/navigation";
 import { CheckCircle2, LoaderCircle, ShieldCheck } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import InitialAdminSetup from "@/components/initial-admin-setup";
 
 type SessionPair={access_token:string;refresh_token:string};
 type Mode="signin"|"signup"|"reset"|"recovery"|"mfa";
@@ -16,12 +17,13 @@ export default function AdminLogin(){
   const [mode,setMode]=useState<Mode>(params.get("recovery")==="1"?"recovery":"signin");
   const [email,setEmail]=useState(""),[password,setPassword]=useState(""),[displayName,setDisplayName]=useState(""),[code,setCode]=useState("");
   const [pair,setPair]=useState<SessionPair|null>(null),[factor,setFactor]=useState(""),[challenge,setChallenge]=useState("");
-  const [qr,setQr]=useState<string|null>(null),[signupEnabled,setSignupEnabled]=useState(false),[bootstrapRequired,setBootstrapRequired]=useState(false);
+  const [qr,setQr]=useState<string|null>(null),[signupEnabled,setSignupEnabled]=useState(false),[bootstrapRequired,setBootstrapRequired]=useState(false),[bootstrapConfigured,setBootstrapConfigured]=useState(false);
   const [busy,setBusy]=useState(false),[error,setError]=useState<string|null>(null),[message,setMessage]=useState<string|null>(null);
 
   useEffect(()=>{
     void fetch("/api/auth/bootstrap",{cache:"no-store"}).then(r=>r.json()).then(b=>{
       setBootstrapRequired(Boolean(b?.data?.bootstrap_required));
+      setBootstrapConfigured(Boolean(b?.data?.bootstrap_configured));
       setSignupEnabled(Boolean(b?.data?.signup_enabled));
     }).catch(()=>{});
   },[]);
@@ -80,6 +82,8 @@ export default function AdminLogin(){
     }catch(err){setError(err instanceof Error?err.message:"Authentication failed.");}
     finally{setBusy(false);}
   }
+
+  if(bootstrapRequired)return <InitialAdminSetup configured={bootstrapConfigured} onComplete={()=>{setBootstrapRequired(false);setMode("signin");}}/>;
 
   const heading=mode==="mfa"?"Verify your second factor":mode==="reset"?"Recover access":mode==="recovery"?"Set a new password":mode==="signup"?"Request HSE access":"Sign in to the safety board";
   return <main className="login-screen">
