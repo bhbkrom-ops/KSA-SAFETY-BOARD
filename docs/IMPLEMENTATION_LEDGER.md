@@ -29,7 +29,7 @@
 - Added the route and traceability registry at `src/lib/route-registry.ts`.
 - Wired the dynamic module route and application sidebar to the registry.
 - Corrected the visible brand mark to `KSA SAFETY BOARD`.
-- Applied the shared HSE foundation migration and security-hardening migration to the target Supabase project.
+- Applied the shared HSE foundation, security-hardening, and monthly HSE statistics migrations to the target Supabase project.
 
 ## Acceptance gate for this phase
 
@@ -37,6 +37,11 @@
 - [x] Sidebar items map to active routes and permissions.
 - [x] Dynamic module allow-list is derived from the registry.
 - [x] Supabase foundation tables, RLS baseline, roles, permissions, and private authorization helper are applied.
+- [x] Monthly HSE statistics tables and RLS policies are applied.
+- [x] `npm run lint` passes with no warnings or errors.
+- [x] `npm run build` passes and generates the expected Next.js routes.
+- [x] Local production server returns HTTP 200 for `/api/health`, `/report`, and `/admin/dashboard`.
+- [ ] Push to `bhbkrom-ops/KSA-SAFETY-BOARD` — blocked by GitHub HTTP 403 permission denial.
 - [ ] Authenticated route/session behavior verified in a real browser.
 - [ ] Target Vercel project/repository linkage verified.
 - [ ] Target deployment environment variables verified without exposing values.
@@ -46,4 +51,4 @@
 
 **IMPLEMENTED — VERIFICATION IN PROGRESS**
 
-The repository foundation and target database baseline are implemented. The system is not yet release-ready because the target Vercel linkage, authenticated runtime, storage policies, and full module gates remain incomplete.
+The repository foundation and target database baseline are implemented locally and in Supabase. The system is not yet release-ready because GitHub push access, target Vercel linkage, authenticated runtime, storage policies, and full module gates remain incomplete.
