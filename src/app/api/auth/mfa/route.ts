@@ -34,7 +34,7 @@ export async function POST(request:NextRequest){
       const {data,error}=await auth.auth.mfa.verify({factorId,challengeId,code});
       if(error||!data)return Response.json({ok:false,error:"MFA verification failed."},{status:401});
       await recordAuthEvent({request,event_type:"mfa.verified",success:true,user_id:setData.user?.id||null});
-      return Response.json({ok:true,data:{session:data,access_token:data.access_token,refresh_token:data.refresh_token,expires_at:data.expires_at}});
+      return Response.json({ok:true,data:{session:data,access_token:data.access_token,refresh_token:data.refresh_token}});
     }
     return Response.json({ok:false,error:"Unsupported MFA action."},{status:400});
   }catch{return Response.json({ok:false,error:"MFA service is unavailable."},{status:503});}
