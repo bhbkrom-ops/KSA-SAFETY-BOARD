@@ -1,8 +1,8 @@
 {
   "source": "Supabase production public schema",
   "project_id": "qazqzejfucknpmnkorqa",
-  "captured_for": "Section 16 route/resource audit",
-  "table_count": 140,
+  "captured_for": "Section 17 SIMOPS production schema refresh",
+  "table_count": 144,
   "tables": [
     "action_comments",
     "action_escalations",
@@ -127,6 +127,10 @@
     "safety_radio_members",
     "safety_radio_transmissions",
     "safety_signs",
+    "simops_activities",
+    "simops_conflict_rules",
+    "simops_conflicts",
+    "simops_plans",
     "sites",
     "system_settings",
     "training_attendance",
