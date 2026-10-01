@@ -2,7 +2,7 @@
 
 ## Current phase
 
-**Phase 1 — UI architecture and global system foundation**
+**Phase 2 — Live Collaboration / live safety meetings**
 
 ## Verified environment
 
@@ -30,6 +30,9 @@
 - Wired the dynamic module route and application sidebar to the registry.
 - Corrected the visible brand mark to `KSA SAFETY BOARD`.
 - Applied the shared HSE foundation, security-hardening, and monthly HSE statistics migrations to the target Supabase project.
+- Added the Live Collaboration schema migration with meetings, participants, messages, minutes, secure invite hash storage, audit triggers, RLS, and Supabase Realtime publication.
+- Added authenticated Live Collaboration APIs for meeting CRUD/lifecycle, participant attendance, secure invite rotation, realtime messages, minutes, and linked HSE actions.
+- Added `/admin/live-meeting` to the route registry and shell with responsive meeting register, lifecycle controls, attendance, minutes, action extraction, invite links, loading/error/empty states, and Realtime discussion.
 
 ## Acceptance gate for this phase
 
@@ -42,6 +45,10 @@
 - [x] `npm run build` passes and generates the expected Next.js routes.
 - [x] Local production server returns HTTP 200 for `/api/health`, `/report`, and `/admin/dashboard`.
 - [x] Push to `bhbkrom-ops/KSA-SAFETY-BOARD` verified on `main` at commit `fc39885`.
+- [x] Live Collaboration tables exist in target Supabase with RLS enabled.
+- [x] Live Collaboration APIs return `401` without a bearer session.
+- [x] Realtime tables are published through the migration.
+- [x] Live Collaboration route and all API handlers compile in production build.
 - [ ] Authenticated route/session behavior verified in a real browser.
 - [ ] Target Vercel project/repository linkage verified.
 - [ ] Target deployment environment variables verified without exposing values.
@@ -49,6 +56,6 @@
 
 ## Status
 
-**IMPLEMENTED — VERIFICATION IN PROGRESS**
+**IMPLEMENTED — AUTHENTICATED ACCEPTANCE VERIFICATION IN PROGRESS**
 
-The repository foundation and target database baseline are implemented in GitHub and Supabase. The system is not yet release-ready because target Vercel linkage, authenticated runtime, storage policies, and full module gates remain incomplete.
+The repository foundation and Live Collaboration vertical slice are implemented in GitHub and Supabase. The system is not yet release-ready because target Vercel linkage, authenticated browser CRUD/Realtime verification, storage policies, and the remaining module gates remain incomplete.

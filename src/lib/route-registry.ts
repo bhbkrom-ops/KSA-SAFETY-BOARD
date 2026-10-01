@@ -3,12 +3,13 @@ import {
   FileWarning,
   LayoutDashboard,
   ListChecks,
+  Radio,
   ShieldAlert,
   Siren,
   type LucideIcon,
 } from "lucide-react";
 
-export type BoardRouteId = "dashboard" | "reports" | "actions" | "risk" | "incidents" | "ncr" | "report";
+export type BoardRouteId = "dashboard" | "reports" | "actions" | "live-meeting" | "risk" | "incidents" | "ncr" | "report";
 export type ProtectedRouteId = Exclude<BoardRouteId, "report">;
 
 export type BoardRoute = {
@@ -50,6 +51,16 @@ export const routeRegistry: Record<BoardRouteId, BoardRoute> = {
     group: "COMMAND CENTER",
     icon: ListChecks,
     permission: "actions.read",
+    protected: true,
+    status: "active",
+  },
+  "live-meeting": {
+    id: "live-meeting",
+    path: "/admin/live-meeting",
+    label: "Live meetings",
+    group: "COMMAND CENTER",
+    icon: Radio,
+    permission: "meetings.create",
     protected: true,
     status: "active",
   },
@@ -104,7 +115,7 @@ export const moduleRouteIds = protectedRouteIds.filter((id) => id !== "dashboard
 export const navigationGroups = [
   {
     label: "COMMAND CENTER",
-    items: [routeRegistry.dashboard, routeRegistry.reports, routeRegistry.actions],
+    items: [routeRegistry.dashboard, routeRegistry.reports, routeRegistry.actions, routeRegistry["live-meeting"]],
   },
   {
     label: "ASSURANCE",

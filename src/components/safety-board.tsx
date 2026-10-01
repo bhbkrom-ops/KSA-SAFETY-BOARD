@@ -41,11 +41,12 @@ import {
   X,
 } from "lucide-react";
 import type { Tables, TablesInsert } from "@/lib/database.types";
+import LiveMeetingView from "@/components/live-meeting";
 import { navigationGroups, pathForRoute } from "@/lib/route-registry";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 
 type ModuleView = "reports" | "actions" | "risk" | "incidents" | "ncr";
-type View = "dashboard" | ModuleView | "report";
+type View = "dashboard" | ModuleView | "live-meeting" | "report";
 type Profile = Pick<Tables<"profiles">, "display_name" | "email" | "role_code" | "is_active">;
 type BoardRow = {
   id: string;
@@ -311,7 +312,7 @@ function BoardShell({ view, user, profile }: { view: Exclude<View, "report">; us
   const [active, setActive] = useState<Exclude<View, "report">>(view);
   const navigate = (next: View) => { router.push(pathForRoute(next)); if (next !== "report") setActive(next); };
   const signOut = () => { void supabase?.auth.signOut(); };
-  return <div className="app-shell"><Sidebar active={active} onNavigate={navigate} profile={profile} onSignOut={signOut} /><div className="main-area"><Topbar onSignOut={signOut} onOpenReport={() => navigate("reports")} /><main className="main-content">{active === "dashboard" ? <DashboardView onNavigate={navigate} /> : <RegisterView kind={active} user={user} />}</main><footer className="app-footer"><span>KSA SAFETY BOARD <b>·</b> Live operational workspace</span><span>Supabase <strong>connected</strong> <CircleDot size={10} /></span></footer></div></div>;
+  return <div className="app-shell"><Sidebar active={active} onNavigate={navigate} profile={profile} onSignOut={signOut} /><div className="main-area"><Topbar onSignOut={signOut} onOpenReport={() => navigate("reports")} /><main className="main-content">{active === "dashboard" ? <DashboardView onNavigate={navigate} /> : active === "live-meeting" ? <LiveMeetingView user={user} /> : <RegisterView kind={active} user={user} />}</main><footer className="app-footer"><span>KSA SAFETY BOARD <b>·</b> Live operational workspace</span><span>Supabase <strong>connected</strong> <CircleDot size={10} /></span></footer></div></div>;
 }
 
 function AuthGate({ view }: { view: View }) {

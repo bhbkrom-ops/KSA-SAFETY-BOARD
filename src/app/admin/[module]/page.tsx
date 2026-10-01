@@ -7,6 +7,6 @@ const allowed = new Set<string>(moduleRouteIds);
 
 export default async function ModulePage({ params }: ModulePageProps) {
   const { module } = await params;
-  const view = allowed.has(module) ? module as "reports" | "actions" | "risk" | "incidents" | "ncr" : "dashboard";
+  const view = allowed.has(module) ? module as "reports" | "actions" | "live-meeting" | "risk" | "incidents" | "ncr" : "dashboard";
   return <SafetyBoard view={view} />;
 }
