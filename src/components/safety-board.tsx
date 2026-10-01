@@ -262,7 +262,7 @@ function RegisterView({ kind, user }: { kind: ModuleView; user: User }) {
 }
 
 function PublicReport() {
-  const [submitted, setSubmitted] = useState(false);
+  const [submitted, setSubmitted] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [language, setLanguage] = useState<"en" | "ar">("en");
@@ -274,14 +274,18 @@ function PublicReport() {
     setError(null);
     if (!supabase) { setError("The secure reporting backend is not configured in this environment yet."); return; }
     setSaving(true);
-    const categoryMap: Record<string, TablesInsert<"reports">["category"]> = { unsafe_condition: "unsafe_condition", unsafe_act: "unsafe_act", near_miss: "near_miss", positive_observation: "positive_observation", environmental_observation: "environmental_observation" };
-    const { error: insertError } = await supabase.from("reports").insert({ reference_no: `PUB-${new Date().getFullYear()}-${Date.now().toString().slice(-6)}`, category: categoryMap[form.category], priority: form.risk as TablesInsert<"reports">["priority"], reporter_name: "Public reporter", exact_area: form.location.trim(), description: form.description.trim(), is_public_submission: true });
+    const { data, error: insertError } = await supabase.rpc("submit_public_report", {
+      p_category: form.category,
+      p_priority: form.risk,
+      p_exact_area: form.location.trim(),
+      p_description: form.description.trim(),
+    });
     setSaving(false);
-    if (insertError) { setError("We could not submit the report. Please try again or contact the HSE team."); return; }
-    setSubmitted(true);
+    if (insertError || !data?.[0]) { setError("We could not submit the report. Please try again or contact the HSE team."); return; }
+    setSubmitted(data[0].reference_no);
   }
 
-  if (submitted) return <div className="public-page"><div className="public-card success-card"><div className="success-icon"><CheckCircle2 size={30} /></div><div className="eyebrow accent-eyebrow">REPORT RECEIVED</div><h1>Thank you for speaking up.</h1><p>Your report has been securely captured in the HSE register. The team can now triage it from the protected workspace.</p><button className="primary-button" onClick={() => setSubmitted(false)}>Submit another report <ArrowRight size={16} /></button></div></div>;
+  if (submitted) return <div className="public-page"><div className="public-card success-card"><div className="success-icon"><CheckCircle2 size={30} /></div><div className="eyebrow accent-eyebrow">REPORT RECEIVED</div><h1>Thank you for speaking up.</h1><p>Your report has been securely captured in the HSE register. Reference: <strong>{submitted}</strong>. The team can now triage it from the protected workspace.</p><button className="primary-button" onClick={() => setSubmitted(null)}>Submit another report <ArrowRight size={16} /></button></div></div>;
   return <div className="public-page" dir={ar ? "rtl" : "ltr"}><div className="public-top"><BrandMark /><button className="language-button" onClick={() => setLanguage(ar ? "en" : "ar")}><Globe2 size={16} /> {ar ? "English" : "العربية"}</button></div><main className="public-content"><div className="public-intro"><div className="eyebrow accent-eyebrow">SAFE REPORTING CHANNEL</div><h1>{ar ? "ساهم في جعل موقعنا أكثر أمانًا" : "Make our workplace safer."}</h1><p>{ar ? "أبلغ عن خطر أو ملاحظة سلامة بطريقة آمنة وواضحة. لا تحتاج إلى تسجيل الدخول." : "Report a hazard, observation, or near miss safely and clearly. No sign-in required."}</p><div className="public-assurances"><span><LockKeyhole size={16} /> Private by design</span><span><ShieldCheck size={16} /> Reviewed by HSE</span></div></div><form className="public-form" onSubmit={submit}><div className="form-heading"><div><h2>{ar ? "نموذج البلاغ" : "Report details"}</h2><p>{ar ? "الحقول المعلّمة مطلوبة" : "Fields marked with * are required."}</p></div><span className="form-step">01 / 01</span></div>{error && <div className="form-error" role="alert">{error}</div>}<label>{ar ? "نوع البلاغ" : "Report type"} *<select required value={form.category} onChange={(event) => setForm({ ...form, category: event.target.value })}><option value="unsafe_condition">Unsafe condition</option><option value="unsafe_act">Unsafe act</option><option value="near_miss">Near miss</option><option value="positive_observation">Positive observation</option><option value="environmental_observation">Environmental observation</option></select></label><div className="form-grid"><label>{ar ? "الموقع" : "Location"} *<input required value={form.location} onChange={(event) => setForm({ ...form, location: event.target.value })} placeholder={ar ? "مثال: المستودع الشمالي" : "e.g. North warehouse"} /></label><label>{ar ? "مستوى الخطورة" : "Risk level"}<select value={form.risk} onChange={(event) => setForm({ ...form, risk: event.target.value })}><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option><option value="critical">Critical</option></select></label></div><label>{ar ? "ماذا حدث؟" : "What did you observe?"} *<textarea required minLength={10} value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} placeholder={ar ? "اكتب وصفًا واضحًا للظرف أو السلوك..." : "Describe the condition or behaviour clearly..."} rows={5} /></label><div className="upload-box"><Plus size={18} /><div><strong>{ar ? "إضافة صور أو مرفقات" : "Add photos or attachments"}</strong><span>Storage upload is being finalized · max 10 MB each</span></div><span className="adapter-tag">NEXT</span></div><div className="form-foot"><span><ShieldCheck size={15} /> Your report is handled confidentially.</span><button type="submit" className="primary-button" disabled={saving}><Send size={16} /> {saving ? "Submitting…" : ar ? "إرسال البلاغ" : "Submit report"}</button></div></form></main><footer className="public-footer"><span>KSA SAFETY BOARD</span><span>Safety is a shared responsibility.</span></footer></div>;
 }
 
