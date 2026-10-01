@@ -67,7 +67,7 @@ export async function POST(request:NextRequest){
       const {data,error}=await auth.auth.signUp({email,password,options:{data:{full_name:display},emailRedirectTo:new URL("/admin/login",request.nextUrl.origin).toString()}});
       await recordAuthEvent({request,event_type:"signup.requested",success:!error,email});
       if(error)return json({ok:false,error:"Account request could not be completed."},422);
-      return json({ok:true,data:{session_created:Boolean(data.session)},message:"Account request accepted. Confirm your email if required."}});
+      return json({ok:true,data:{session_created:Boolean(data.session)},message:"Account request accepted. Confirm your email if required."});
     }catch{return json({ok:false,error:"Signup service is unavailable."},503);}
   }
 
