@@ -179,6 +179,9 @@ const blockers=[
   ...report.checks.resource_table_missing_in_production
 ];
 console.log("Section 16 audit:",JSON.stringify(report.summary));
+for(const [name,items] of Object.entries(report.checks)){
+  if(items.length) console.warn("AUDIT_FINDINGS "+name+":",JSON.stringify(items));
+}
 if(blockers.length){
   console.error("Section 16 audit BLOCKED:",JSON.stringify(blockers,null,2));
   process.exit(1);
