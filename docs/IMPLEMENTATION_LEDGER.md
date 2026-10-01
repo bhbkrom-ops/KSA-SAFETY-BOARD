@@ -1,30 +1,29 @@
 
-## 05 — HSE Escalation Management / إدارة التصعيد
+## 06 — HSE Compliance & Work Control / الامتثال والتحكم بالعمل
 
 ### Implemented
 
-Added protected routes `/admin/escalations`, `/admin/escalations/history`, and `/admin/escalations/matrix` with a shared escalation command center. The dashboard supports search, severity filtering, KPI summaries, refresh, create, acknowledge, resolve, loading/empty/error states, and responsive/print-safe presentation. History supports search, refresh, and CSV export. Matrix supports real persisted rule creation and active rule display. A governed dry-run action evaluates active matching rules and explicitly reports that no write occurred.
+Activated the previously planned work-control navigation and added protected routes for `/admin/permit-compliance-center`, `/admin/permits`, `/admin/loto`, `/admin/inspections`, `/admin/audits`, and `/admin/compliance`. The shared Work Control command center provides operational register views, search, status filters, KPI summaries, create forms, lifecycle actions, CSV export, loading/error/empty states, responsive layout, and print-safe styling.
 
 ### Database
 
-Migration `0012_hse_escalation_management.sql` was applied to Supabase. It adds `escalation_rules`, `escalations`, `escalation_history`, and `notification_outbox`, with status/severity checks, source and due-date indexes, idempotency key support for outbox delivery, staff-only RLS, and four permissions: `escalations.read`, `escalations.manage`, `escalations.matrix.manage`, and `notifications.outbox.manage`. Supabase verification confirms all four tables exist with RLS enabled and permissions increased to 34.
+Migration `0013_hse_compliance_work_control.sql` was applied to Supabase. It adds `ptw_permits`, `loto_records`, `loto_isolation_points`, `loto_locks`, `job_safety_analyses`, `lmra_assessments`, `inspection_templates`, `inspection_tasks`, `inspection_observations`, `hse_audits`, `hse_audit_findings`, `compliance_obligations`, and `work_control_history`. Constraints cover supported permit types, HSE standards, lifecycle states, risk/severity, compliance status, and LOTO states. Indexes cover permit expiry, LOTO end dates, inspection due dates, audit finding due dates, compliance review/expiry, and history lookup. Staff-only RLS is enabled on every table. Permissions increased to 38 and include work-control, PTW, LOTO, inspection, and compliance management permissions.
 
-### API and governance
+### API and workflow
 
-`/api/escalations` provides authenticated reads for dashboard, history, matrix, and outbox views; staff-only create/update/delete; explicit status transitions; actor/status history; rule creation/update; and dry-run evaluation. Destructive deletion requires an explicit `confirm: true` payload. All responses use the structured `{ ok, data }` / `{ ok, error }` contract. No provider or channel secrets are exposed. The notification outbox schema is ready for a connected delivery worker, but no external email/WhatsApp/Teams sender was fabricated or enabled.
+`/api/work-control` provides permission-scoped reads and staff-only creates/status transitions for permits, LOTO, inspections, audits, and compliance. Server-side transition maps reject invalid lifecycle transitions with HTTP 409. Created records write a history event; status changes record previous/new status, actor, and reason. The API validates trust-boundary fields and returns structured JSON. PTW, JSA, LMRA, LOTO, inspections, audits, and compliance share real persisted entities rather than localStorage or demo records.
 
 ### Verification
 
-- `npm run lint` — PASS with no warnings.
-- `npm run build` — PASS; nested escalation route and API compiled.
-- `/admin/escalations` — HTTP 200.
-- `/admin/escalations/history` — HTTP 200.
-- `/admin/escalations/matrix` — HTTP 200.
-- Escalation GET views and POST dry-run without authentication — HTTP 401 with structured JSON.
-- Supabase tables — four new tables verified with RLS enabled.
+- `npm run lint` — PASS.
+- `npm run build` — PASS; 32 routes compiled including `/api/work-control`.
+- All six Section 06 routes — HTTP 200 through the production server.
+- All five work-control resource reads without authentication — HTTP 401 structured JSON.
+- Unauthenticated create attempt — HTTP 401 structured JSON.
+- Supabase verification — 13 new tables exist with RLS enabled.
 - Secret scan — no service-role keys, private keys, passwords, or bearer tokens found.
 - `git diff --check` — PASS.
 
 ### Explicit gaps
 
-The current section implements the governed management surface and persistence foundation. A production scheduler/worker that scans source modules, applies rules idempotently, claims outbox rows, delivers connected channels, retries transient failures, and records dead-letter outcomes remains pending for the automation/integration section. Authenticated browser CRUD persistence and role-specific 403 tests remain not tested because no authenticated test user/session was available in this run. No automatic closure or unreviewed CAPA creation was introduced.
+Authenticated browser CRUD, role-specific 403 tests, persisted reload tests, nested JSA steps/acknowledgements, LOTO point/lock sub-resource APIs, inspection observation/CAPA creation, audit finding CRUD, and print templates for formal permits/audits remain follow-up work. The current slice establishes the governed core and the primary lifecycle surfaces without pretending those detailed sub-workflows are complete. No permit activation, isolation release, or compliance closure is automated without an authorized user.
