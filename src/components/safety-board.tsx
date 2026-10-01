@@ -50,7 +50,8 @@ import LicensesCompetencyCommandCenter, { type Section07View } from "@/component
 import SafetySystemsCommandCenter, { type SafetySystemsView } from "@/components/safety-systems-command-center";
 import HSEReportsDocumentsCommandCenter, { type ReportsDocumentsView } from "@/components/hse-reports-documents-command-center";
 import SafetyCommunicationCommandCenter, { type SafetyCommunicationView } from "@/components/safety-communication-command-center";
-import AdminSystemCommandCenter, { type AdminSystemView } from "@/components/admin-system-command-center";\nimport SimopsCommandCenter from "@/components/simops-command-center";
+import AdminSystemCommandCenter, { type AdminSystemView } from "@/components/admin-system-command-center";
+import SimopsCommandCenter from "@/components/simops-command-center";
 import { navigationGroups, pathForRoute } from "@/lib/route-registry";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 
