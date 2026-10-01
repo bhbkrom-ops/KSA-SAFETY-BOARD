@@ -7,7 +7,7 @@ export async function GET(){
     const admin=serviceClient();
     const {data,error}=await admin.auth.admin.listUsers({page:1,perPage:1});
     if(error)return json({ok:false,error:"Bootstrap status is unavailable."},500);
-    return json({ok:true,data:{bootstrap_required:data.users.length===0,bootstrap_configured:Boolean(process.env.BOOTSTRAP_ADMIN_TOKEN)}});
+    return json({ok:true,data:{bootstrap_required:data.users.length===0,bootstrap_configured:Boolean(process.env.BOOTSTRAP_ADMIN_TOKEN),signup_enabled:process.env.AUTH_SIGNUP_ENABLED==="true"}});
   }catch{return json({ok:false,error:"Bootstrap status is unavailable."},500);}
 }
 export async function POST(request:NextRequest){
