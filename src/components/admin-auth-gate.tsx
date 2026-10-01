@@ -8,7 +8,7 @@ export default function AdminAuthGate({children}:{children:React.ReactNode}){
   const pathname=usePathname(); const router=useRouter();
   const [state,setState]=useState<"checking"|"allowed">("checking");
   useEffect(()=>{
-    if(pathname==="/admin/login"){setState("allowed");return;}
+    if(pathname==="/admin/login")return;
     let alive=true;
     void (async()=>{
       if(!supabase){router.replace("/admin/login?reason=config");return;}
@@ -27,6 +27,7 @@ export default function AdminAuthGate({children}:{children:React.ReactNode}){
     })();
     return()=>{alive=false};
   },[pathname,router]);
+  if(pathname==="/admin/login")return <>{children}</>;
   if(state!=="allowed")return <div className="auth-page"><div className="auth-card compact-auth"><ShieldCheck size={30}/><h1>Validating secure session</h1><p className="auth-copy">Checking role, session cutoff and MFA assurance.</p><LoaderCircle className="spin" size={22}/></div></div>;
   return <>{children}</>;
 }
