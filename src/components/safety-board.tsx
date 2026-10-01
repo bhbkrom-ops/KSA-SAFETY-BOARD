@@ -42,11 +42,12 @@ import {
 } from "lucide-react";
 import type { Tables, TablesInsert } from "@/lib/database.types";
 import LiveMeetingView from "@/components/live-meeting";
+import VisionCommandCenter, { type VisionView } from "@/components/vision-command-center";
 import { navigationGroups, pathForRoute } from "@/lib/route-registry";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 
 type ModuleView = "reports" | "actions" | "risk" | "incidents" | "ncr";
-type View = "dashboard" | ModuleView | "live-meeting" | "report";
+type View = "dashboard" | ModuleView | "live-meeting" | "vision" | "report";
 type Profile = Pick<Tables<"profiles">, "display_name" | "email" | "role_code" | "is_active">;
 type BoardRow = {
   id: string;
@@ -57,7 +58,7 @@ type BoardRow = {
   priority: string;
   updated: string;
 };
-type SafetyBoardProps = { view?: View };
+type SafetyBoardProps = { view?: View; visionView?: VisionView };
 
 type RowStatusTone = "blue" | "green" | "amber" | "red" | "neutral";
 
@@ -307,15 +308,15 @@ function PublicReport() {
   return <div className="public-page" dir={ar ? "rtl" : "ltr"}><div className="public-top"><BrandMark /><button className="language-button" onClick={() => setLanguage(ar ? "en" : "ar")}><Globe2 size={16} /> {ar ? "English" : "العربية"}</button></div><main className="public-content"><div className="public-intro"><div className="eyebrow accent-eyebrow">SAFE REPORTING CHANNEL</div><h1>{ar ? "ساهم في جعل موقعنا أكثر أمانًا" : "Make our workplace safer."}</h1><p>{ar ? "أبلغ عن خطر أو ملاحظة سلامة بطريقة آمنة وواضحة. لا تحتاج إلى تسجيل الدخول." : "Report a hazard, observation, or near miss safely and clearly. No sign-in required."}</p><div className="public-assurances"><span><LockKeyhole size={16} /> Private by design</span><span><ShieldCheck size={16} /> Reviewed by HSE</span></div></div><form className="public-form" onSubmit={submit}><div className="form-heading"><div><h2>{ar ? "نموذج البلاغ" : "Report details"}</h2><p>{ar ? "الحقول المعلّمة مطلوبة" : "Fields marked with * are required."}</p></div><span className="form-step">01 / 01</span></div>{error && <div className="form-error" role="alert">{error}</div>}<label>{ar ? "نوع البلاغ" : "Report type"} *<select required value={form.category} onChange={(event) => setForm({ ...form, category: event.target.value })}><option value="unsafe_condition">Unsafe condition</option><option value="unsafe_act">Unsafe act</option><option value="near_miss">Near miss</option><option value="positive_observation">Positive observation</option><option value="environmental_observation">Environmental observation</option></select></label><div className="form-grid"><label>{ar ? "الموقع" : "Location"} *<input required value={form.location} onChange={(event) => setForm({ ...form, location: event.target.value })} placeholder={ar ? "مثال: المستودع الشمالي" : "e.g. North warehouse"} /></label><label>{ar ? "مستوى الخطورة" : "Risk level"}<select value={form.risk} onChange={(event) => setForm({ ...form, risk: event.target.value })}><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option><option value="critical">Critical</option></select></label></div><label>{ar ? "ماذا حدث؟" : "What did you observe?"} *<textarea required minLength={10} value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} placeholder={ar ? "اكتب وصفًا واضحًا للظرف أو السلوك..." : "Describe the condition or behaviour clearly..."} rows={5} /></label><div className="upload-box"><Plus size={18} /><div><strong>{ar ? "إضافة صور أو مرفقات" : "Add photos or attachments"}</strong><span>Storage upload is being finalized · max 10 MB each</span></div><span className="adapter-tag">NEXT</span></div><div className="form-foot"><span><ShieldCheck size={15} /> Your report is handled confidentially.</span><button type="submit" className="primary-button" disabled={saving}><Send size={16} /> {saving ? "Submitting…" : ar ? "إرسال البلاغ" : "Submit report"}</button></div></form></main><footer className="public-footer"><span>KSA SAFETY BOARD</span><span>Safety is a shared responsibility.</span></footer></div>;
 }
 
-function BoardShell({ view, user, profile }: { view: Exclude<View, "report">; user: User; profile: Profile }) {
+function BoardShell({ view, visionView, user, profile }: { view: Exclude<View, "report">; visionView?: VisionView; user: User; profile: Profile }) {
   const router = useRouter();
   const [active, setActive] = useState<Exclude<View, "report">>(view);
   const navigate = (next: View) => { router.push(pathForRoute(next)); if (next !== "report") setActive(next); };
   const signOut = () => { void supabase?.auth.signOut(); };
-  return <div className="app-shell"><Sidebar active={active} onNavigate={navigate} profile={profile} onSignOut={signOut} /><div className="main-area"><Topbar onSignOut={signOut} onOpenReport={() => navigate("reports")} /><main className="main-content">{active === "dashboard" ? <DashboardView onNavigate={navigate} /> : active === "live-meeting" ? <LiveMeetingView user={user} /> : <RegisterView kind={active} user={user} />}</main><footer className="app-footer"><span>KSA SAFETY BOARD <b>·</b> Live operational workspace</span><span>Supabase <strong>connected</strong> <CircleDot size={10} /></span></footer></div></div>;
+  return <div className="app-shell"><Sidebar active={active} onNavigate={navigate} profile={profile} onSignOut={signOut} /><div className="main-area"><Topbar onSignOut={signOut} onOpenReport={() => navigate("reports")} /><main className="main-content">{active === "dashboard" ? <DashboardView onNavigate={navigate} /> : active === "live-meeting" ? <LiveMeetingView user={user} /> : active === "vision" ? <VisionCommandCenter user={user} view={visionView ?? "dashboard"} /> : <RegisterView kind={active} user={user} />}</main><footer className="app-footer"><span>KSA SAFETY BOARD <b>·</b> Live operational workspace</span><span>Supabase <strong>connected</strong> <CircleDot size={10} /></span></footer></div></div>;
 }
 
-function AuthGate({ view }: { view: View }) {
+function AuthGate({ view, visionView }: { view: View; visionView?: VisionView }) {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [authReady, setAuthReady] = useState(false);
@@ -347,10 +348,10 @@ function AuthGate({ view }: { view: View }) {
   if (!user) return <AuthPanel />;
   if (error) return <ErrorState message={error} />;
   if (!profile || !profile.is_active || !STAFF_ROLES.has(profile.role_code)) return <div className="auth-page"><div className="auth-card"><BrandMark /><div className="eyebrow accent-eyebrow">ACCESS REVIEW</div><h1>Account awaiting HSE access.</h1><p className="auth-copy">Your identity is authenticated, but the database role policy has not granted staff access yet. Ask a Super Admin to activate your profile.</p><div className="auth-note"><UserRound size={15} /> Current role: {profile ? formatStatus(profile.role_code) : "pending profile"}</div><button className="secondary-button wide" onClick={() => { void supabase?.auth.signOut(); }}><LogOut size={15} /> Sign out</button></div></div>;
-  return <BoardShell view={view as Exclude<View, "report">} user={user} profile={profile} />;
+  return <BoardShell view={view as Exclude<View, "report">} visionView={visionView} user={user} profile={profile} />;
 }
 
-export default function SafetyBoard({ view = "dashboard" }: SafetyBoardProps) {
+export default function SafetyBoard({ view = "dashboard", visionView }: SafetyBoardProps) {
   if (view === "report") return <PublicReport />;
-  return <AuthGate view={view} />;
+  return <AuthGate view={view} visionView={visionView} />;
 }

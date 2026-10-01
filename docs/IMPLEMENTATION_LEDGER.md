@@ -2,7 +2,7 @@
 
 ## Current phase
 
-**Phase 2 — Live Collaboration / live safety meetings**
+**Phase 3 — ESP Safety Vision / camera and edge operations**
 
 ## Verified environment
 
@@ -33,6 +33,11 @@
 - Added the Live Collaboration schema migration with meetings, participants, messages, minutes, secure invite hash storage, audit triggers, RLS, and Supabase Realtime publication.
 - Added authenticated Live Collaboration APIs for meeting CRUD/lifecycle, participant attendance, secure invite rotation, realtime messages, minutes, and linked HSE actions.
 - Added `/admin/live-meeting` to the route registry and shell with responsive meeting register, lifecycle controls, attendance, minutes, action extraction, invite links, loading/error/empty states, and Realtime discussion.
+- Added the ESP Safety Vision database family: `vision_devices`, `vision_cameras`, `vision_rules`, `vision_restricted_zones`, `vision_alerts`, `vision_recordings`, `vision_settings`, and `vision_audit_logs`.
+- Added Vision permissions, RLS policies, indexes, audit triggers, and Realtime publication for cameras, devices, and alerts.
+- Added Vision APIs for cameras, devices, alerts, rules, recordings, restricted zones, settings, and audit logs; camera responses never return raw RTSP endpoints.
+- Added the nested Vision route family under `/admin/vision/[view]` with dashboard, camera wall, cameras, devices, map, rules, events, alerts, analytics, and settings views.
+- Added truthful gateway states: the UI never presents RTSP as browser playback and shows preview unavailable unless a WebRTC/HLS gateway is configured.
 
 ## Acceptance gate for this phase
 
@@ -49,6 +54,11 @@
 - [x] Live Collaboration APIs return `401` without a bearer session.
 - [x] Realtime tables are published through the migration.
 - [x] Live Collaboration route and all API handlers compile in production build.
+- [x] Vision tables exist in target Supabase with RLS enabled.
+- [x] Vision permissions, indexes, audit triggers, and Realtime publication are applied.
+- [x] Vision API handlers and nested routes compile in production build.
+- [x] Vercel project `krom5/ksa-safety-board` is linked to `bhbkrom-ops/KSA-SAFETY-BOARD`; latest production deployment verified at the previous Live Collaboration commit.
+- [x] Vision source scan found no RTSP credential, service-role key, device token, or private key in source/migrations.
 - [ ] Authenticated route/session behavior verified in a real browser.
 - [ ] Target Vercel project/repository linkage verified.
 - [ ] Target deployment environment variables verified without exposing values.
@@ -56,6 +66,6 @@
 
 ## Status
 
-**IMPLEMENTED — AUTHENTICATED ACCEPTANCE VERIFICATION IN PROGRESS**
+**IMPLEMENTED — DEPLOYMENT PENDING VISION COMMIT**
 
-The repository foundation and Live Collaboration vertical slice are implemented in GitHub and Supabase. The system is not yet release-ready because target Vercel linkage, authenticated browser CRUD/Realtime verification, storage policies, and the remaining module gates remain incomplete.
+The repository foundation, Live Collaboration slice, and Vision slice are implemented locally and in Supabase. The Vision commit is ready to push; Vercel is correctly linked and should deploy from `main`. Production readiness still requires authenticated browser CRUD/Realtime verification, actual ESP ingestion/stream gateway integration, storage/recording policies, and the remaining module gates.

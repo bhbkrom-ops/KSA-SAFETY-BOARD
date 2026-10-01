@@ -1,0 +1,3 @@
+import { NextRequest } from "next/server";
+import { isAuthContext, requireAuth } from "@/lib/server-auth";
+export async function GET(request: NextRequest) { const auth = await requireAuth(request); if (!isAuthContext(auth)) return auth; const limit = Math.min(Number(request.nextUrl.searchParams.get("limit") ?? 100), 200); const { data, error } = await auth.client.from("vision_audit_logs").select("id,actor_id,action,target_type,target_id,ip_address,metadata,created_at").order("created_at", { ascending: false }).limit(limit); if (error) return Response.json({ ok: false, error: error.message }, { status: 500 }); return Response.json({ ok: true, data: data ?? [] }); }

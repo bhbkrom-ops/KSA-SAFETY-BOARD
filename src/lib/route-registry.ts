@@ -1,4 +1,5 @@
 import {
+  Camera,
   ClipboardCheck,
   FileWarning,
   LayoutDashboard,
@@ -9,7 +10,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
-export type BoardRouteId = "dashboard" | "reports" | "actions" | "live-meeting" | "risk" | "incidents" | "ncr" | "report";
+export type BoardRouteId = "dashboard" | "reports" | "actions" | "live-meeting" | "vision" | "risk" | "incidents" | "ncr" | "report";
 export type ProtectedRouteId = Exclude<BoardRouteId, "report">;
 
 export type BoardRoute = {
@@ -64,6 +65,16 @@ export const routeRegistry: Record<BoardRouteId, BoardRoute> = {
     protected: true,
     status: "active",
   },
+  vision: {
+    id: "vision",
+    path: "/admin/vision/dashboard",
+    label: "Safety Vision",
+    group: "COMMAND CENTER",
+    icon: Camera,
+    permission: "vision.read",
+    protected: true,
+    status: "active",
+  },
   risk: {
     id: "risk",
     path: "/admin/risk",
@@ -115,7 +126,7 @@ export const moduleRouteIds = protectedRouteIds.filter((id) => id !== "dashboard
 export const navigationGroups = [
   {
     label: "COMMAND CENTER",
-    items: [routeRegistry.dashboard, routeRegistry.reports, routeRegistry.actions, routeRegistry["live-meeting"]],
+    items: [routeRegistry.dashboard, routeRegistry.reports, routeRegistry.actions, routeRegistry["live-meeting"], routeRegistry.vision],
   },
   {
     label: "ASSURANCE",
