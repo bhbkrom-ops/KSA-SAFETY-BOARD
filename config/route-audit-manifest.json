@@ -71,9 +71,10 @@
     },
     {
       "path": "/admin/inbound-config",
-      "classification": "hidden",
+      "classification": "alias",
       "owner": "safety-communication",
-      "reason": "Non-primary configuration surface; preserve only when implementation exists"
+      "reason": "Legacy inbound configuration entry explicitly redirects to Email Settings",
+      "canonical": "/admin/email-settings"
     },
     {
       "path": "/admin/competency",
