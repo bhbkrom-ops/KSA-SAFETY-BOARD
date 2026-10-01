@@ -23,6 +23,8 @@ export async function PATCH(request: NextRequest, { params }: Params) {
   const { data: current, error: currentError } = await auth.client.from("live_meetings").select("id,status,host_id,scheduled_start,scheduled_end,title,description").eq("id", id).maybeSingle();
   if (currentError) return Response.json({ ok: false, error: currentError.message }, { status: 500 });
   if (!current) return Response.json({ ok: false, error: "Meeting not found." }, { status: 404 });
+  const privileged = ["super_admin","hse_manager"].includes(auth.profile.role_code);
+  if (current.host_id !== auth.user.id && !privileged) return Response.json({ ok: false, error: "Only the meeting host or HSE management can manage this meeting." }, { status: 403 });
 
   const requestedStatus = body?.status as string | undefined;
   const update: Record<string, unknown> = { updated_at: new Date().toISOString() };

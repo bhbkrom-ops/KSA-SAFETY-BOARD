@@ -29,6 +29,11 @@ export async function POST(request: NextRequest) {
   }
 
   if (!auth.isStaff) return Response.json({ ok: false, error: "Only HSE staff can invite participants." }, { status: 403 });
+  const { data: meeting, error: meetingError } = await auth.client.from("live_meetings").select("id,host_id").eq("id", meetingId).maybeSingle();
+  if (meetingError) return Response.json({ ok: false, error: meetingError.message }, { status: 500 });
+  if (!meeting) return Response.json({ ok: false, error: "Meeting not found." }, { status: 404 });
+  const privileged = ["super_admin","hse_manager"].includes(auth.profile.role_code);
+  if (meeting.host_id !== auth.user.id && !privileged) return Response.json({ ok: false, error: "Only the meeting host or HSE management can invite participants." }, { status: 403 });
   const email = cleanText(body?.invite_email, 320).toLowerCase() || null;
   const userId = cleanText(body?.user_id, 80) || null;
   const displayName = cleanText(body?.display_name, 160) || email;

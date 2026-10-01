@@ -1254,7 +1254,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      submit_public_report: {
+        Args: {
+          p_category: string
+          p_priority: string
+          p_exact_area: string
+          p_description: string
+        }
+        Returns: {
+          id: string
+          reference_no: string
+        }[]
+      }
     }
     Enums: {
       action_status:

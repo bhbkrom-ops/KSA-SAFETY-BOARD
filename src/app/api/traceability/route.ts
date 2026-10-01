@@ -63,7 +63,7 @@ export async function GET(request:NextRequest){
   for(const f of c.filters){const v=cleanText(request.nextUrl.searchParams.get(f),160);if(v)q=q.eq(f,v);}
   const {data,error}=await q;if(error)return fail(error.message,500);
   if(key==="occupational_surveillance"&&!["super_admin","hse_manager"].includes(auth.profile.role_code)) {
-    return Response.json({ok:true,data:(data||[]).map(({confidential_summary,...rest}:any)=>rest)});
+    return Response.json({ok:true,data:(data||[]).map((row:any)=>{const rest={...row};delete rest.confidential_summary;return rest;})});
   }
   return Response.json({ok:true,data:data||[]});
 }
