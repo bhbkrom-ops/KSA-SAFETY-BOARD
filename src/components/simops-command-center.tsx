@@ -8,7 +8,7 @@ type Plan=Json&{id:string;plan_no:string;title:string;area?:string|null;window_s
 type Activity=Json&{id:string;activity_code:string;title:string;activity_type:string;location:string;start_at:string;end_at:string;status:string};
 type Conflict=Json&{id:string;severity:string;status:string;rationale:string;resolution?:string|null;activity_a?:Json;activity_b?:Json;rule?:Json};
 type Rule=Json&{id:string;rule_code:string;name:string;severity:string;activity_type_a:string;activity_type_b:string;rationale:string;required_controls?:unknown};
-type Payload={plans:Plan[];selected_plan_id:string|null;activities:Activity[];conflicts:Conflict[];rules:Rule[];analytics:{open_conflicts:number;critical_conflicts:number;unresolved_before_start:number;conflict_categories:number}};
+type Payload={plans:Plan[];selected_plan_id:string|null;activities:Activity[];conflicts:Conflict[];rules:Rule[];analytics:{open_conflicts:number;critical_conflicts:number;unresolved_before_start:number;conflict_categories:number;repeat_conflicting_activities:number}};
 
 const activityTypes=[
  ["hot_work","Hot work"],["flammable_transfer","Flammable transfer"],["lifting","Lifting"],["pedestrian_access","Pedestrian / public access"],
@@ -59,7 +59,7 @@ export default function SimopsCommandCenter(){
     <Kpi label="Open conflicts" value={data?.analytics.open_conflicts??0} icon={<Siren size={16}/>}/>
     <Kpi label="Critical conflicts" value={data?.analytics.critical_conflicts??0} icon={<ShieldAlert size={16}/>}/>
     <Kpi label="Unresolved before start" value={data?.analytics.unresolved_before_start??0} icon={<Clock3 size={16}/>}/>
-    <Kpi label="Conflict categories" value={data?.analytics.conflict_categories??0} icon={<HardHat size={16}/>}/>
+    <Kpi label="Conflict categories" value={data?.analytics.conflict_categories??0} icon={<HardHat size={16}/>}/><Kpi label="Repeat conflicting activities" value={data?.analytics.repeat_conflicting_activities??0} icon={<RefreshCw size={16}/>}/>
    </div>
    {loading?<div className="state-card"><LoaderCircle className="spin" size={24}/><strong>Loading SIMOPS controls…</strong></div>:
    <div className="overview-grid-2">
