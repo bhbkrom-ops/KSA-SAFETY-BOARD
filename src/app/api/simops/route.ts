@@ -3,6 +3,35 @@ import { isAuthContext, requireAuth } from "@/lib/server-auth";
 import { cleanText } from "@/lib/live-meeting";
 
 type Json = Record<string, unknown>;
+type SimopsPlanRow = {
+  id: string;
+  window_start: string;
+  window_end: string;
+};
+type SimopsActivityScanRow = {
+  id: string;
+  activity_type: string;
+  location: string;
+  start_at: string;
+  end_at: string;
+};
+type SimopsRuleRow = {
+  id: string;
+  activity_type_a: string;
+  activity_type_b: string;
+  severity: "low" | "medium" | "high" | "critical";
+  rationale: string;
+  required_controls: unknown;
+};
+type SimopsConflictAnalyticsRow = {
+  id: string;
+  severity: string;
+  status: string;
+  rule_id: string;
+  plan_id: string;
+  activity_a_id: string;
+  activity_b_id: string;
+};
 const fail=(error:string,status=422)=>Response.json({ok:false,error},{status});
 const bodyOf=async(request:NextRequest)=>await request.json().catch(()=>null) as Json|null;
 const text=(v:unknown,max=500)=>cleanText(v,max);
@@ -20,7 +49,9 @@ export async function GET(request:NextRequest){
     ]);
     if(plansRes.error)return fail(plansRes.error.message,500);
     if(rulesRes.error)return fail(rulesRes.error.message,500);
-    const selected=planId||plansRes.data?.[0]?.id||null;
+    const plans=(plansRes.data??[]) as unknown as SimopsPlanRow[];
+    const rules=(rulesRes.data??[]) as unknown as SimopsRuleRow[];
+    const selected=planId||plans[0]?.id||null;
     let activities:Json[]=[];let conflicts:Json[]=[];
     if(selected){
       const [a,c]=await Promise.all([
@@ -30,8 +61,8 @@ export async function GET(request:NextRequest){
       if(a.error)return fail(a.error.message,500);if(c.error)return fail(c.error.message,500);
       activities=(a.data||[]) as Json[];conflicts=(c.data||[]) as Json[];
     }
-    const allConflicts=(await auth.client.from("simops_conflicts").select("id,severity,status,rule_id,plan_id,activity_a_id,activity_b_id")).data||[];
-    const planStarts=new Map((plansRes.data||[]).map(p=>[p.id,new Date(p.window_start).getTime()]));
+    const allConflicts=(((await auth.client.from("simops_conflicts").select("id,severity,status,rule_id,plan_id,activity_a_id,activity_b_id")).data)??[]) as unknown as SimopsConflictAnalyticsRow[];
+    const planStarts=new Map(plans.map(p=>[p.id,new Date(p.window_start).getTime()]));
     const unresolved=allConflicts.filter(x=>!["controlled","resolved","accepted"].includes(x.status));
     const activityConflictCounts=new Map<string,number>();
     for(const c of unresolved){for(const id of [c.activity_a_id,c.activity_b_id])activityConflictCounts.set(id,(activityConflictCounts.get(id)||0)+1);}
@@ -42,7 +73,7 @@ export async function GET(request:NextRequest){
       conflict_categories:new Set(allConflicts.map(x=>x.rule_id)).size,
       repeat_conflicting_activities:[...activityConflictCounts.values()].filter(count=>count>1).length
     };
-    return Response.json({ok:true,data:{plans:plansRes.data||[],selected_plan_id:selected,activities,conflicts,rules:rulesRes.data||[],analytics}});
+    return Response.json({ok:true,data:{plans,selected_plan_id:selected,activities,conflicts,rules,analytics}});
   }catch(e){return fail(e instanceof Error?e.message:"SIMOPS data could not be loaded.",500);}
 }
 
@@ -87,7 +118,8 @@ export async function POST(request:NextRequest){
     ]);
     if(aRes.error||rRes.error)return fail(aRes.error?.message||rRes.error?.message||"Conflict inputs could not be loaded.",500);
     const rows:Json[]=[];
-    const acts=aRes.data||[],rules=rRes.data||[];
+    const acts=(aRes.data??[]) as unknown as SimopsActivityScanRow[];
+    const rules=(rRes.data??[]) as unknown as SimopsRuleRow[];
     for(let i=0;i<acts.length;i++)for(let j=i+1;j<acts.length;j++){
       const aa=acts[i],bb=acts[j];if(!overlaps(aa,bb)||!sameLocation(aa.location,bb.location))continue;
       for(const rule of rules){
