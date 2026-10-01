@@ -43,6 +43,39 @@ export async function POST(request:NextRequest){
   const resource=request.nextUrl.searchParams.get("resource");const body=await request.json().catch(()=>({})) as Record<string,unknown>;
   if(resource==="users"){if(!canAdmin(auth.profile.role_code))return fail("User administration requires Super Admin or HSE Manager.",403);return proxyAdminUsers(request,"POST",body);}
   if(resource==="plants"){if(!canAdmin(auth.profile.role_code))return fail("Facility changes require Super Admin or HSE Manager.",403);const name=clean(body.name,160),code=clean(body.code,40);if(!name||!code)return fail("Site name and code are required.");const payload={name,code,name_ar:clean(body.name_ar,160)||null,manager_name:clean(body.manager_name,160)||null,location:clean(body.location,240)||null,industry:clean(body.industry,120)||null,status:clean(body.status,20)||"active",timezone:clean(body.timezone,80)||"Asia/Riyadh"};const {data,error}=await db.from("sites").insert(payload).select("*").single();if(error||!data)return fail(error?.message||"Site could not be created.",422);await audit(db,auth.user.id,"site.created","site",data.id,data);return Response.json({ok:true,data},{status:201});}
+  if(resource==="settings"){
+    if(!canAdmin(auth.profile.role_code))return fail("Settings changes require Super Admin or HSE Manager.",403);
+    const action=request.nextUrl.searchParams.get("action");
+    if(action==="branding-upload"){
+      const fileName=clean(body.file_name,180),mime=clean(body.mime_type,100);
+      const allowed=["image/png","image/jpeg","image/webp","image/svg+xml"];
+      if(!fileName||!allowed.includes(mime))return fail("A supported PNG, JPEG, WEBP, or SVG logo is required.",422);
+      const safeName=fileName.replace(/[^a-zA-Z0-9._-]+/g,"-").slice(-120);
+      const path=`logos/${Date.now()}-${crypto.randomUUID().slice(0,8)}-${safeName}`;
+      const signed=await auth.client.storage.from("branding-assets").createSignedUploadUrl(path);
+      if(signed.error||!signed.data)return fail(signed.error?.message||"Signed upload URL could not be created.",422);
+      const publicUrl=auth.client.storage.from("branding-assets").getPublicUrl(path).data.publicUrl;
+      await audit(db,auth.user.id,"branding.upload_authorized","storage_object",null,{bucket:"branding-assets",path,mime});
+      return Response.json({ok:true,data:{bucket:"branding-assets",path,token:signed.data.token,public_url:publicUrl}});
+    }
+    if(action==="restore-config"){
+      const snapshot=body.snapshot;
+      if(!snapshot||typeof snapshot!=="object"||Array.isArray(snapshot))return fail("A valid configuration snapshot is required.",422);
+      const allowedKeys=new Set(["branding","backgrounds","integrations","document_numbering","qr","print_templates"]);
+      const entries=Object.entries(snapshot as Record<string,unknown>).filter(([key])=>allowedKeys.has(key));
+      if(!entries.length)return fail("Snapshot contains no supported configuration keys.",422);
+      for(const [key,value] of entries){
+        if(!value||typeof value!=="object"||Array.isArray(value))return fail(`Invalid value for ${key}.`,422);
+        const raw=JSON.stringify(value);
+        if(raw.includes("data:image")||raw.includes(";base64,")||/password|secret|api[_-]?key|token/i.test(raw))return fail("Snapshots may not contain secrets or Base64 assets.",422);
+      }
+      const payload=entries.map(([key,value])=>({key,value,updated_by:auth.user.id,updated_at:new Date().toISOString()}));
+      const {data,error}=await db.from("system_settings").upsert(payload).select("key,value,updated_at");
+      if(error)return fail(error.message,422);
+      await audit(db,auth.user.id,"settings.configuration_restored","system_setting",null,{keys:entries.map(([key])=>key)});
+      return Response.json({ok:true,data:data||[]});
+    }
+  }
   if(resource==="integrations"){
     if(!canAdmin(auth.profile.role_code))return fail("Integration controls require Super Admin or HSE Manager.",403);
     const action=request.nextUrl.searchParams.get("action");
@@ -57,6 +90,7 @@ export async function PATCH(request:NextRequest){
   const auth=await requireAuth(request);if(!isAuthContext(auth))return auth;if(!auth.isStaff)return fail("Administration changes require HSE staff.",403);const db=auth.client as any;
   const resource=request.nextUrl.searchParams.get("resource");const body=await request.json().catch(()=>null) as Record<string,unknown>|null;if(!body)return fail("A JSON body is required.",400);
   if(resource==="users"){if(!canAdmin(auth.profile.role_code))return fail("User administration requires Super Admin or HSE Manager.",403);return proxyAdminUsers(request,"PATCH",body);}
+  if(resource==="plants"){if(!canAdmin(auth.profile.role_code))return fail("Facility changes require Super Admin or HSE Manager.",403);const id=clean(body.id,80),name=clean(body.name,160),code=clean(body.code,40);if(!id||!name||!code)return fail("Site ID, name, and code are required.",422);const patch={name,code,name_ar:clean(body.name_ar,160)||null,manager_name:clean(body.manager_name,160)||null,location:clean(body.location,240)||null,industry:clean(body.industry,120)||null,status:clean(body.status,20)||"active",timezone:clean(body.timezone,80)||"Asia/Riyadh"};const {data,error}=await db.from("sites").update(patch).eq("id",id).select("*").single();if(error||!data)return fail(error?.message||"Site could not be updated.",422);await audit(db,auth.user.id,"site.updated","site",id,patch);return Response.json({ok:true,data});}
   if(resource==="permissions"){if(!canAdmin(auth.profile.role_code))return fail("Permission matrix changes require Super Admin or HSE Manager.",403);const roleId=clean(body.role_id,80),permissionId=clean(body.permission_id,80),enabled=Boolean(body.enabled);if(!roleId||!permissionId)return fail("Role and permission are required.",422);let dbError:any=null;if(enabled){const result=await db.from("role_permissions").upsert({role_id:roleId,permission_id:permissionId});dbError=result.error;}else{const result=await db.from("role_permissions").delete().eq("role_id",roleId).eq("permission_id",permissionId);dbError=result.error;}if(dbError)return fail(dbError.message,422);await audit(db,auth.user.id,"permission_matrix.updated","role_permission",null,{role_id:roleId,permission_id:permissionId,enabled});return Response.json({ok:true,data:{role_id:roleId,permission_id:permissionId,enabled}});}
   if(resource==="settings"){if(!canAdmin(auth.profile.role_code))return fail("Settings changes require Super Admin or HSE Manager.",403);const key=clean(body.key,100);const value=body.value;if(!key||!value||typeof value!=="object")return fail("Setting key and JSON object value are required.");const json=JSON.stringify(value);if(json.includes("data:image")||json.includes(";base64,"))return fail("Base64 assets are not permitted in settings.");const logo=(value as any).logo_url;if(logo&&typeof logo==="string"&&!(logo.startsWith("/")||logo.startsWith("https://")))return fail("Logo must use an internal path or HTTPS URL.");const {data,error}=await db.from("system_settings").upsert({key,value,updated_by:auth.user.id,updated_at:new Date().toISOString()}).select("*").single();if(error||!data)return fail(error?.message||"Setting could not be saved.",422);await audit(db,auth.user.id,"setting.updated","system_setting",null,{key});return Response.json({ok:true,data});}
   return fail("This administration operation is not supported.",400);
