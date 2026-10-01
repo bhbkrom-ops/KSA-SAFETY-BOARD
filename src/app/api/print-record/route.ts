@@ -34,7 +34,7 @@ export async function GET(request:NextRequest){
     db.from("system_settings").select("value").eq("key","print_templates").maybeSingle(),
   ]);
   if(recordError)return fail(recordError.message,500);if(!record)return fail("Record not found or not accessible.",404);if(template==="monthly-hse-report"&&record.resource_type!=="monthly_report")return fail("Record is not a Monthly HSE Report.",409);if(template==="safety-pyramid"&&record.resource_type!=="safety_pyramid")return fail("Record is not a Safety Pyramid record.",409);
-  let related:any={};
+  const related:any={};
   if(template==="risk"){const {data,error}=await db.from("risk_hazards").select("*").eq("assessment_id",id).order("created_at");if(error)return fail(error.message,500);related.hazards=data||[];}
   if(template==="ncr"){const {data,error}=await db.from("capa").select("*,action:actions(*)").eq("ncr_id",id);if(error)return fail(error.message,500);related.capa=data||[];}
   if(template==="incident"){const {data,error}=await db.from("actions").select("*").eq("source_type","incident").eq("source_id",id).order("created_at");if(error)return fail(error.message,500);related.actions=data||[];}
