@@ -122,3 +122,5 @@
   .standalone-print-shell{padding:10px;overflow-x:auto}
   .controlled-document{width:210mm;transform-origin:top left}
 }
+
+.safety-pyramid-print{display:flex;align-items:center;flex-direction:column;gap:1.5mm;margin:5mm auto 0}.safety-pyramid-print>div{display:flex;align-items:center;justify-content:space-between;min-height:10mm;padding:2mm 4mm;border:1px solid #9eabad;background:#f5f7f7!important;color:#111!important}.safety-pyramid-print span{font-size:8pt;font-weight:700}.safety-pyramid-print strong{font-size:13pt}
