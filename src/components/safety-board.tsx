@@ -293,7 +293,7 @@ function BoardShell({ view, visionView, user, profile }: { view: Exclude<View, "
   const router = useRouter();
   const [active, setActive] = useState<Exclude<View, "report">>(view);
   const navigate = (next: View) => { router.push(pathForRoute(next)); if (next !== "report") setActive(next); };
-  const signOut = () => { void supabase?.auth.signOut(); };
+  const signOut = () => { void (async()=>{const current=(await supabase?.auth.getSession())?.data.session;if(current){await fetch("/api/auth/logout",{method:"POST",headers:{"Content-Type":"application/json",Authorization:`Bearer ${current.access_token}`},body:JSON.stringify({refresh_token:current.refresh_token})}).catch(()=>{});}await supabase?.auth.signOut({scope:"local"});router.replace("/admin/login");})(); };
   const overviewViews: OverviewView[] = ["dashboard", "executive-hse", "safety-intelligence", "daily-operations-command", "hse-management-review", "hse-objectives", "environmental-aspects", "intelligence-reporting-center", "hse-assistant"];
   const escalationViews: EscalationView[] = ["escalations", "escalations-history", "escalations-matrix"];
   const workControlViews: WorkControlView[] = ["permit-compliance-center", "inspections", "audits", "compliance", "loto", "permits"];
