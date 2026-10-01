@@ -85,7 +85,7 @@ export async function POST(request:NextRequest){
     if(!verified)return json({ok:false,error:"Tracking details could not be verified."},404);
     const {data,error}=await verified.db.from("public_report_messages").insert({report_id:verified.report.id,sender_type:"reporter",body:message,is_internal:false}).select("id,sender_type,body,created_at").single();
     if(error)return json({ok:false,error:"Message could not be sent."},422);
-    return json({ok:true,data},{status:201});
+    return json({ok:true,data},201);
   }
 
   return json({ok:false,error:"Unsupported public reporting action."},400);
