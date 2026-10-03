@@ -15,7 +15,7 @@ export default function AdminLogin(){
   const rawNext=params.get("next")||"/admin/dashboard";
   const next=rawNext.startsWith("/")&&!rawNext.startsWith("//")?rawNext:"/admin/dashboard";
   const [mode,setMode]=useState<Mode>(params.get("recovery")==="1"?"recovery":"signin");
-  const [email,setEmail]=useState(""),[password,setPassword]=useState(""),[displayName,setDisplayName]=useState(""),[code,setCode]=useState("");
+  const [email,setEmail]=useState(params.get("email")||""),[password,setPassword]=useState(""),[displayName,setDisplayName]=useState(""),[code,setCode]=useState("");
   const [pair,setPair]=useState<SessionPair|null>(null),[factor,setFactor]=useState(""),[challenge,setChallenge]=useState("");
   const [qr,setQr]=useState<string|null>(null),[signupEnabled,setSignupEnabled]=useState(false),[bootstrapRequired,setBootstrapRequired]=useState(false),[bootstrapConfigured,setBootstrapConfigured]=useState(false);
   const [busy,setBusy]=useState(false),[error,setError]=useState<string|null>(null),[message,setMessage]=useState<string|null>(null);
@@ -31,7 +31,12 @@ export default function AdminLogin(){
   async function api(url:string,body:Record<string,unknown>,access?:string){
     const r=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json",...(access?{Authorization:`Bearer ${access}`}:{})},body:JSON.stringify(body)});
     const j=await r.json().catch(()=>({ok:false,error:`HTTP ${r.status}`}));
-    if(!r.ok||!j.ok)throw new Error(j.error||"Request failed.");
+    if(!r.ok||!j.ok){
+      const detail=j?.code==="AUTH_CONFIG_MISSING"
+        ?"Supabase login configuration is missing from the deployment. Check Vercel environment variables."
+        :(j.error||"Request failed.");
+      throw new Error(detail);
+    }
     return j.data??j;
   }
 
