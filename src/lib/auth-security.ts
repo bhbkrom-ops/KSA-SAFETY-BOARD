@@ -11,8 +11,19 @@ export function publicAuthClient(){
   if(!url||!publishable) throw new Error("Supabase public authentication is not configured.");
   return createClient(url,publishable,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
 }
+export function userAuthClient(accessToken:string){
+  if(!url||!publishable) throw new Error("Supabase public authentication is not configured.");
+  return createClient(url,publishable,{
+    global:{headers:{Authorization:`Bearer ${accessToken}`}},
+    auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}
+  });
+}
 export function serviceClient(){
   if(!url||!service) throw new Error("Supabase service authentication is not configured.");
+  return createClient(url,service,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
+}
+export function optionalServiceClient(){
+  if(!url||!service)return null;
   return createClient(url,service,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
 }
 export function passwordPolicy(password:string,email=""){
@@ -55,7 +66,9 @@ export function verifiedJwtClaims(token:string){
 }
 export async function recordAuthEvent(args:{request:Request;event_type:string;success:boolean;user_id?:string|null;email?:string|null;metadata?:Record<string,unknown>}){
   try{
-    const db=serviceClient(); const fp=clientFingerprint(args.request);
+    const db=optionalServiceClient();
+    if(!db)return;
+    const fp=clientFingerprint(args.request);
     await db.from("auth_security_events").insert({
       user_id:args.user_id||null,event_type:args.event_type,success:args.success,
       email_hash:args.email?hashValue(args.email.trim().toLowerCase()):null,
