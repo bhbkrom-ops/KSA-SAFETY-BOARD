@@ -91,7 +91,7 @@ export default function AdminLogin(){
   if(bootstrapRequired)return <InitialAdminSetup configured={bootstrapConfigured} onComplete={()=>{setBootstrapRequired(false);setMode("signin");}}/>;
 
   const heading=mode==="mfa"?"Verify your second factor":mode==="reset"?"Recover access":mode==="recovery"?"Set a new password":mode==="signup"?"Request HSE access":"Sign in to the safety board";
-  return <main className="login-screen">
+  return <main className={`login-screen login-mode-${mode}`}>
     <section className="login-side"><div className="login-brand"><ShieldCheck size={34}/><div><strong>KSA SAFETY BOARD</strong><span>Secure HSE Workspace</span></div></div><div><span className="landing-kicker">CONTROLLED ACCESS</span><h1>Verified identity before operational authority.</h1><p>Role scope, session cutoff, MFA and Supabase RLS are enforced independently of the interface.</p></div></section>
     <section className="login-panel"><div className="login-card"><div className="eyebrow accent-eyebrow">{mode==="mfa"?"MULTI-FACTOR AUTHENTICATION":mode==="reset"?"PASSWORD RECOVERY":mode==="recovery"?"CHANGE PASSWORD":mode==="signup"?"ACCESS REQUEST":"ADMIN ACCESS"}</div><h2>{heading}</h2>
       {bootstrapRequired&&<div className="form-error">Initial Super Admin setup is required before normal sign-in can succeed.</div>}
