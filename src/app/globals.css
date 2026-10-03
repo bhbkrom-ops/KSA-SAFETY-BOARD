@@ -168,3 +168,56 @@
 .tracking-shell{display:grid;grid-template-columns:minmax(320px,420px) minmax(0,1fr);gap:18px;align-items:start;width:min(1180px,calc(100% - 32px));margin:38px auto}.tracking-card{position:sticky;top:22px}.tracking-results{display:grid;gap:14px}.tracking-status-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}.tracking-status-head h2{margin:3px 0 0;color:var(--ink);font-size:20px}.tracking-description{display:grid;gap:6px;margin-top:14px;padding:13px;border:1px solid var(--line);border-radius:7px;background:#fbfcfc}.tracking-description span{color:var(--muted);font-size:9px}.tracking-description p{margin:0;color:var(--ink);font-size:11px;line-height:1.7;white-space:pre-wrap}
 .public-message-thread{display:grid;gap:8px;max-height:390px;overflow:auto;padding:3px}.public-message{display:grid;gap:5px;max-width:86%;padding:11px 13px;border:1px solid var(--line);border-radius:8px;background:#f8fbfb}.public-message.reporter{margin-inline-start:auto;background:#eef8f6}.public-message strong{color:var(--ink);font-size:10px}.public-message p{margin:0;color:var(--ink);font-size:11px;line-height:1.6;white-space:pre-wrap}.public-message small{color:var(--muted-light);font-size:8px}.message-compose{display:grid;gap:8px;margin-top:14px}.message-compose textarea{width:100%;resize:vertical}
 @media(max-width:850px){.tracking-shell{grid-template-columns:1fr}.tracking-card{position:static}.identity-details{grid-template-columns:1fr}.public-message{max-width:94%}}
+
+
+/* Login layout hardening 2026-10-03 */
+.login-screen,
+.login-screen *{box-sizing:border-box}
+.login-screen{width:100%;min-height:100dvh;overflow-x:hidden}
+.login-side,.login-panel{min-width:0}
+.login-panel{align-content:center;justify-items:center;overflow-y:auto}
+.login-card{display:grid;gap:0;width:min(100%,520px);max-width:520px;margin:auto}
+.login-card .eyebrow{margin-bottom:4px}
+.login-card h2{margin-bottom:18px;line-height:1.15}
+.auth-form{display:grid;gap:16px;width:100%}
+.auth-form label{display:grid;gap:7px;color:#36595c;font-size:12px;font-weight:700}
+.auth-form input,.auth-form select,.auth-form textarea{
+  width:100%;min-width:0;height:46px;padding:0 13px;border:1px solid #cbd9d8;border-radius:9px;
+  background:#fff;color:#173a3c;font:500 14px/1.2 inherit;outline:none;transition:border-color .16s ease,box-shadow .16s ease
+}
+.auth-form input:focus,.auth-form select:focus,.auth-form textarea:focus{
+  border-color:#3f9d97;box-shadow:0 0 0 3px rgba(63,157,151,.14)
+}
+.auth-form .primary-button.wide{
+  width:100%;min-height:46px;justify-content:center;border-radius:9px;font-size:13px;font-weight:800
+}
+.login-links{align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.login-links button{min-height:34px;padding:0 4px;font-size:12px}
+.login-public-link{display:flex;align-items:center;justify-content:center;gap:7px;min-height:40px}
+.form-error,.form-success{
+  width:100%;margin:0 0 14px;padding:11px 12px;border-radius:8px;font-size:12px;line-height:1.5;overflow-wrap:anywhere
+}
+.form-error{border:1px solid #efc6bf;background:#fff2ef;color:#8b3d31}
+.form-success{display:flex;align-items:flex-start;gap:7px;border:1px solid #c7e5d8;background:#effaf5;color:#25634f}
+.mfa-qr{display:grid;justify-items:center;gap:10px;margin:6px 0 16px;padding:14px;border:1px solid #d8e4e3;border-radius:10px;background:#f8fbfb}
+.mfa-qr img{display:block;width:min(220px,100%);height:auto}
+.mfa-qr small{color:#577273;text-align:center;line-height:1.5}
+@media(max-width:900px){
+  .login-screen{display:block;background:#f3f7f7}
+  .login-side{min-height:auto;padding:28px 24px 24px}
+  .login-side>div:last-child{display:none}
+  .login-panel{display:block;padding:24px 16px 40px}
+  .login-card{max-width:560px;padding:28px}
+}
+@media(max-width:520px){
+  .login-side{padding:20px 18px}
+  .login-brand{gap:9px}.login-brand svg{width:28px;height:28px}
+  .login-brand strong{font-size:13px}.login-brand span{font-size:10px}
+  .login-panel{padding:16px 12px 28px}
+  .login-card{padding:22px 18px;border-radius:10px;box-shadow:0 10px 28px rgba(8,46,50,.07)}
+  .login-card h2{font-size:23px}
+  .auth-form{gap:14px}
+  .auth-form input,.auth-form select,.auth-form textarea{height:44px;font-size:16px}
+  .login-links{align-items:flex-start;flex-direction:column}
+  .login-public-link{margin-top:18px;padding-top:16px}
+}
