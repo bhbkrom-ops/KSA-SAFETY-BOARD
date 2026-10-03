@@ -1,29 +1,27 @@
 import { createClient } from "@supabase/supabase-js";
 import { createHash, timingSafeEqual } from "node:crypto";
 
-const url=process.env.NEXT_PUBLIC_SUPABASE_URL;
-const publishable=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+const url=process.env.NEXT_PUBLIC_SUPABASE_URL || "https://qazqzejfucknpmnkorqa.supabase.co";
+const publishable=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || "sb_publishable_1fSSTfoko8rb3qn_0JdvQg_y4ifylRF";
 const service=process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 export const PRIVILEGED_ROLES=new Set(["super_admin","hse_manager"]);
 
 export function publicAuthClient(){
-  if(!url||!publishable) throw new Error("Supabase public authentication is not configured.");
   return createClient(url,publishable,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
 }
 export function userAuthClient(accessToken:string){
-  if(!url||!publishable) throw new Error("Supabase public authentication is not configured.");
   return createClient(url,publishable,{
     global:{headers:{Authorization:`Bearer ${accessToken}`}},
     auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}
   });
 }
 export function serviceClient(){
-  if(!url||!service) throw new Error("Supabase service authentication is not configured.");
+  if(!service) throw new Error("Supabase service authentication is not configured.");
   return createClient(url,service,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
 }
 export function optionalServiceClient(){
-  if(!url||!service)return null;
+  if(!service)return null;
   return createClient(url,service,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
 }
 export function passwordPolicy(password:string,email=""){
