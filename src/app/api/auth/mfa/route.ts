@@ -17,8 +17,24 @@ export async function POST(request:NextRequest){
       return Response.json({ok:true,data});
     }
     if(action==="enroll"){
+      const {data:factors,error:factorsError}=await auth.auth.mfa.listFactors();
+      if(factorsError)return Response.json({ok:false,error:"MFA factors are unavailable."},{status:422});
+
+      const verified=(factors?.totp||[]).find((item:{status:string})=>item.status==="verified");
+      if(verified){
+        return Response.json({ok:false,error:"A verified MFA factor already exists.",code:"MFA_ALREADY_VERIFIED",data:{factor_id:verified.id}},{status:409});
+      }
+
+      const stale=(factors?.totp||[]).filter((item:{status:string})=>item.status!=="verified");
+      for(const item of stale){
+        const {error:unenrollError}=await auth.auth.mfa.unenroll({factorId:item.id});
+        if(unenrollError){
+          return Response.json({ok:false,error:"Previous incomplete MFA enrollment could not be cleared.",code:"MFA_STALE_FACTOR"},{status:422});
+        }
+      }
+
       const {data,error}=await auth.auth.mfa.enroll({factorType:"totp",friendlyName:"KSA Safety Board"});
-      if(error)return Response.json({ok:false,error:"MFA enrollment could not start."},{status:422});
+      if(error)return Response.json({ok:false,error:error.message||"MFA enrollment could not start.",code:"MFA_ENROLL_FAILED"},{status:422});
       return Response.json({ok:true,data});
     }
     const factorId=String(body?.factor_id||"");
