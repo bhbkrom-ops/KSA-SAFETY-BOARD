@@ -33,7 +33,7 @@ export async function POST(request:NextRequest){
         }
       }
 
-      const {data,error}=await auth.auth.mfa.enroll({factorType:"totp",friendlyName:"KSA Safety Board"});
+      const {data,error}=await auth.auth.mfa.enroll({factorType:"totp"});
       if(error)return Response.json({ok:false,error:error.message||"MFA enrollment could not start.",code:"MFA_ENROLL_FAILED"},{status:422});
       return Response.json({ok:true,data});
     }
