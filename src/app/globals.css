@@ -221,3 +221,81 @@
   .login-links{align-items:flex-start;flex-direction:column}
   .login-public-link{margin-top:18px;padding-top:16px}
 }
+
+
+/* Access review + auth fallback styling */
+.auth-page{
+  min-height:100dvh;
+  display:grid;
+  place-items:center;
+  padding:24px;
+  background:
+    radial-gradient(circle at 20% 15%,rgba(51,160,154,.16),transparent 34%),
+    linear-gradient(145deg,#071b24 0%,#0f3842 55%,#12333b 100%);
+  color:#eef8f7;
+}
+.auth-card{
+  width:min(100%,560px);
+  display:grid;
+  gap:14px;
+  padding:34px;
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:16px;
+  background:rgba(255,255,255,.97);
+  color:#173a3c;
+  box-shadow:0 24px 70px rgba(0,0,0,.22);
+}
+.auth-card h1{
+  margin:0;
+  color:#12383c;
+  font-size:clamp(28px,4vw,42px);
+  line-height:1.08;
+  letter-spacing:-.035em;
+}
+.auth-copy{
+  margin:0;
+  color:#5b7476;
+  font-size:14px;
+  line-height:1.7;
+}
+.auth-note{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-height:42px;
+  padding:10px 12px;
+  border:1px solid #d8e4e3;
+  border-radius:9px;
+  background:#f5f9f8;
+  color:#365d5f;
+  font-size:13px;
+}
+.auth-card .secondary-button.wide{
+  width:100%;
+  min-height:44px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  border:1px solid #cbd9d8;
+  border-radius:9px;
+  background:#fff;
+  color:#274f52;
+  font:700 13px/1 inherit;
+  cursor:pointer;
+}
+.auth-card .secondary-button.wide:hover{
+  border-color:#7eb6b1;
+  background:#f2f9f8;
+}
+.auth-card .eyebrow{
+  color:#2f8580;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.12em;
+}
+@media(max-width:600px){
+  .auth-page{padding:14px}
+  .auth-card{padding:22px 18px;border-radius:12px}
+  .auth-card h1{font-size:30px}
+}
